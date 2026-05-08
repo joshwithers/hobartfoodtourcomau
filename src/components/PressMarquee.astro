@@ -1,0 +1,48 @@
+---
+import { SITE } from '~/lib/site'
+const items = [...SITE.press, ...SITE.press]
+---
+
+<section class="press-strip">
+  <div class="container press-row">
+    <span class="kicker press-label">Featured in</span>
+    <div class="marquee-mask">
+      <div class="marquee-track">
+        {items.map((p) => (
+          <span class="press-item" style={p.style}>{p.name}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .press-strip {
+    padding-block: 32px;
+    background: var(--color-off-white);
+    border-block: 1px solid var(--color-sand);
+  }
+  .press-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .press-label { color: var(--color-warm-gray); flex-shrink: 0; }
+  .marquee-mask {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  }
+  .press-item {
+    color: var(--color-charcoal);
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .press-row { flex-direction: column; align-items: flex-start; }
+  }
+</style>

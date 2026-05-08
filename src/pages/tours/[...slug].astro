@@ -1,0 +1,505 @@
+---
+import { getCollection, render } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import CategoryBadge from '~/components/CategoryBadge.astro'
+import Postcard from '~/components/Postcard.astro'
+import TourCard from '~/components/TourCard.astro'
+import SectionHead from '~/components/SectionHead.astro'
+import { tourSchema, breadcrumbSchema, faqSchema } from '~/lib/schema'
+import { formatPrice, SITE } from '~/lib/site'
+
+export async function getStaticPaths() {
+  const tours = await getCollection('tours')
+  return tours.map((tour) => ({
+    params: { slug: tour.id },
+    props: { tour },
+  }))
+}
+
+interface Props { tour: CollectionEntry<'tours'> }
+const { tour } = Astro.props
+const { Content } = await render(tour)
+
+const allTours = await getCollection('tours')
+const otherTours = allTours.filter((t) => t.id !== tour.id).sort((a, b) => a.data.order - b.data.order).slice(0, 3)
+
+const url = `/tours/${tour.id}/`
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Tours', url: '/tours/' },
+  { name: tour.data.title, url },
+])
+const tourLd = tourSchema(tour, url)
+const faqLd = faqSchema(tour.data.faq)
+
+const jsonLd = [breadcrumbs, tourLd]
+if (faqLd) jsonLd.push(faqLd)
+---
+
+<Base
+  title={tour.data.title}
+  description={tour.data.description}
+  canonical={url}
+  keywords={tour.data.keywords}
+  publishedTime={tour.data.publishDate}
+  modifiedTime={tour.data.updatedDate ?? tour.data.publishDate}
+  jsonLd={jsonLd}
+>
+  <article>
+    <section class="tour-hero">
+      <div class="container">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Tours', href: '/tours/' },
+            { label: tour.data.title },
+          ]}
+        />
+
+        <div class="hero-grid">
+          <div class="hero-left">
+            <div class="hero-cats">
+              {tour.data.badge && <span class="pill pill-accent">{tour.data.badge}</span>}
+              {tour.data.categories.map((c) => <CategoryBadge kind={c as any} />)}
+            </div>
+
+            <h1 class="hero-title">{tour.data.title}</h1>
+            <p class="hero-summary">{tour.data.summary}</p>
+
+            <ul class="hero-meta" aria-label="Tour at a glance">
+              <li>
+                <span class="meta-label">Duration</span>
+                <span class="meta-value">{tour.data.duration}</span>
+              </li>
+              <li>
+                <span class="meta-label">Departs</span>
+                <span class="meta-value">{tour.data.departs}</span>
+              </li>
+              <li>
+                <span class="meta-label">Group size</span>
+                <span class="meta-value">{tour.data.groupSize}</span>
+              </li>
+              <li>
+                <span class="meta-label">Meeting point</span>
+                <span class="meta-value">{tour.data.meetingPoint}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="hero-right">
+            {tour.data.heroImage ? (
+              <figure class="hero-illustration">
+                <img
+                  src={tour.data.heroImage}
+                  alt={tour.data.heroImageAlt ?? ''}
+                  loading="eager"
+                  decoding="async"
+                  width="900"
+                  height="850"
+                />
+              </figure>
+            ) : (
+              <Postcard
+                scene={tour.data.sceneKey}
+                swatch={tour.data.swatch}
+                durationLabel={tour.data.durationShort}
+                badge={tour.data.badge}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tour-body section">
+      <div class="container body-grid">
+        <div class="body-content">
+          <h2 class="content-heading">What this tour actually is</h2>
+          <div class="prose">
+            <Content />
+          </div>
+
+          {tour.data.itinerary.length > 0 && (
+            <div class="block">
+              <h2 class="content-heading">The day, beat by beat</h2>
+              <ol class={`itinerary${tour.data.itinerary.some((s) => s.time) ? '' : ' itinerary-no-times'}`}>
+                {tour.data.itinerary.map((stop, i) => (
+                  <li>
+                    {stop.time ? (
+                      <span class="stop-time tnum">{stop.time}</span>
+                    ) : null}
+                    <div>
+                      <span class="stop-num tnum">Stop {String(i + 1).padStart(2, '0')}</span>
+                      <h3 class="stop-title">{stop.title}</h3>
+                      {stop.note && <p class="stop-note">{stop.note}</p>}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {tour.data.inclusions.length > 0 && (
+            <div class="block">
+              <h2 class="content-heading">What's included</h2>
+              <ul class="inclusions">
+                {tour.data.inclusions.map((inc) => (
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span>{inc}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {tour.data.highlights.length > 0 && (
+            <div class="block">
+              <h2 class="content-heading">Highlights</h2>
+              <ul class="highlights">
+                {tour.data.highlights.map((h) => <li>{h}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {tour.data.faq.length > 0 && (
+            <div class="block">
+              <h2 class="content-heading">FAQ</h2>
+              <div class="faq">
+                {tour.data.faq.map((item) => (
+                  <details>
+                    <summary>{item.q}</summary>
+                    <p>{item.a}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <aside class="booking-card-wrapper">
+          <div class="booking-card">
+            <div class="booking-head">
+              <span class="kicker booking-kicker">
+                <span class="dot dot-pulse"></span>
+                {tour.data.bookingProvider === 'enquiry' ? 'By enquiry' : 'Live availability'}
+              </span>
+              <span class="booking-provider">{tour.data.bookingProvider === 'enquiry' ? 'Email or call' : 'FareHarbor'}</span>
+            </div>
+
+            <div class="booking-price">
+              <span class="price-pre">From</span>
+              <span class="price-amount tnum">{formatPrice(tour.data.price, tour.data.currency)}</span>
+              <span class="price-meta">per guest · {tour.data.duration}</span>
+            </div>
+
+            <div class="booking-meta">
+              {tour.data.reviewCount > 0 && (
+                <span class="meta-item meta-rating">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15 9 22 9.5 17 14 18.5 21 12 17.5 5.5 21 7 14 2 9.5 9 9 12 2" /></svg>
+                  <span class="tnum"><strong>{tour.data.rating.toFixed(1)}</strong> · {tour.data.reviewCount.toLocaleString('en-AU')} reviews</span>
+                </span>
+              )}
+              <span class="meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                <span>{tour.data.meetingAddress}</span>
+              </span>
+            </div>
+
+            {tour.data.bookingProvider === 'enquiry' ? (
+              <a href={`/contact/?tour=${tour.id}`} class="btn btn-primary btn-lg booking-cta">
+                Enquire about this tour
+              </a>
+            ) : tour.data.fareharborItem || tour.data.fareharborFlow ? (
+              <>
+                <div class="fareharbor-embed">
+                  {tour.data.fareharborItem ? (
+                    <script
+                      is:inline
+                      src={`https://fareharbor.com/embeds/script/calendar/daves/items/${tour.data.fareharborItem}/?fallback=simple&full-items=yes${tour.data.fareharborFlow ? `&flow=${tour.data.fareharborFlow}` : ''}`}
+                    ></script>
+                  ) : (
+                    <script
+                      is:inline
+                      src={`https://fareharbor.com/embeds/script/items/daves/?full-items=yes&fallback=simple&flow=${tour.data.fareharborFlow}`}
+                    ></script>
+                  )}
+                </div>
+                <a href={`/contact/?tour=private-charter&about=${tour.id}`} class="btn btn-outline btn-lg booking-cta booking-cta-secondary">
+                  Book a private experience
+                </a>
+              </>
+            ) : (
+              <>
+                <a
+                  href={tour.data.bookingUrl ?? `/contact/?tour=${tour.id}`}
+                  class="btn btn-primary btn-lg booking-cta"
+                  rel={tour.data.bookingUrl ? 'noopener' : undefined}
+                  target={tour.data.bookingUrl ? '_blank' : undefined}
+                >
+                  Book a ticket
+                </a>
+                <a href={`/contact/?tour=private-charter&about=${tour.id}`} class="btn btn-outline btn-lg booking-cta booking-cta-secondary">
+                  Book a private experience
+                </a>
+              </>
+            )}
+            <p class="booking-fine">
+              {tour.data.bookingProvider === 'enquiry'
+                ? 'Same-day reply during business hours.'
+                : 'Free cancellation up to 24h before. No booking fee. Also offering private charters for groups of 6+.'}
+            </p>
+
+            <div class="booking-foot">
+              <a href={SITE.phoneHref} class="booking-phone tnum">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.86 19.86 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.86 19.86 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" /></svg>
+                {SITE.phone}
+              </a>
+              <a href={`mailto:${SITE.email}`} class="booking-email">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                {SITE.email}
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-paper">
+      <div class="container">
+        <SectionHead
+          kicker={`Other tours we run in ${SITE.address.locality}`}
+          title="Staying in Hobart for longer?"
+          description="A lot of guests pair the food tour with the pub tour or a meet-the-makers day. Weekday departures are quieter and just as good."
+          actionLabel="See all tours"
+          actionHref="/tours/"
+        />
+        <div class="other-tours">
+          {otherTours.map((t) => <TourCard tour={t} compact />)}
+        </div>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .tour-hero {
+    padding-block: clamp(32px, 4vw, 64px) clamp(48px, 4vw, 80px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .tour-hero .breadcrumbs { margin-bottom: 24px; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 48px;
+    margin-top: 24px;
+    align-items: center;
+  }
+  .hero-cats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .hero-title {
+    font-size: clamp(2.2rem, 1.5rem + 3vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+    margin-bottom: 16px;
+  }
+  .hero-summary {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--color-charcoal);
+    max-width: 56ch;
+  }
+  .hero-meta {
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 24px 0 0;
+    border-top: 1px solid var(--color-sand);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 32px;
+  }
+  .hero-meta li { display: flex; flex-direction: column; gap: 4px; }
+  .meta-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-warm-gray); }
+  .meta-value { font-size: 14px; font-weight: 500; color: var(--color-ink); line-height: 1.3; }
+
+  .hero-illustration {
+    margin: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--color-ink);
+    border: 1px solid var(--color-sand);
+    aspect-ratio: 1 / 1;
+  }
+  .hero-illustration img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .body-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 48px;
+    align-items: flex-start;
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+
+  .content-heading {
+    font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.7rem);
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .block { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--color-light-sand); }
+  .block:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  .itinerary { list-style: none; padding: 0; margin: 0; }
+  .itinerary li {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 16px;
+    padding: 18px 0;
+    border-top: 1px solid var(--color-light-sand);
+  }
+  .itinerary-no-times li { grid-template-columns: 1fr; }
+  .itinerary li:first-child { border-top: 1px solid var(--color-sand); }
+  .stop-time {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-accent-strong);
+    letter-spacing: 0.02em;
+  }
+  .stop-num { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--color-warm-gray); text-transform: uppercase; }
+  .stop-title { font-size: 1.05rem; font-weight: 600; color: var(--color-ink); margin: 4px 0 6px; line-height: 1.25; }
+  .stop-note { color: var(--color-charcoal); font-size: 0.95rem; line-height: 1.5; }
+
+  .inclusions { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+  .inclusions li { display: flex; gap: 10px; align-items: flex-start; color: var(--color-charcoal); font-size: 0.98rem; line-height: 1.4; }
+  .inclusions svg { color: var(--color-accent); flex-shrink: 0; margin-top: 2px; }
+
+  .highlights { padding-left: 1.4em; color: var(--color-charcoal); }
+  .highlights li { margin-bottom: 6px; line-height: 1.5; }
+
+  .faq details {
+    border-top: 1px solid var(--color-light-sand);
+    padding: 16px 0;
+  }
+  .faq details:first-child { border-top: 1px solid var(--color-sand); }
+  .faq summary {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: '+';
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--color-warm-gray);
+    transition: transform 200ms;
+  }
+  .faq details[open] summary::after { transform: rotate(45deg); color: var(--color-accent); }
+  .faq p { margin-top: 8px; color: var(--color-charcoal); line-height: 1.55; }
+
+  /* Booking sidebar */
+  .booking-card-wrapper { position: sticky; top: 100px; }
+  .booking-card {
+    background: var(--color-canvas);
+    border: 1px solid var(--color-sand);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 18px 50px -28px rgba(32, 21, 21, 0.25);
+  }
+  .booking-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--color-light-sand);
+  }
+  .booking-kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--color-charcoal); }
+  .booking-kicker .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--color-accent); }
+  .booking-provider { font-size: 12px; color: var(--color-warm-gray); font-weight: 600; }
+
+  .booking-price { display: flex; flex-direction: column; gap: 4px; margin-bottom: 18px; }
+  .price-pre { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--color-warm-gray); text-transform: uppercase; }
+  .price-amount { font-size: 2.2rem; font-weight: 700; color: var(--color-ink); line-height: 1; letter-spacing: -0.02em; }
+  .price-meta { font-size: 13px; color: var(--color-charcoal); }
+
+  .booking-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 0;
+    margin-bottom: 16px;
+    border-block: 1px solid var(--color-light-sand);
+    color: var(--color-charcoal);
+    font-size: 13px;
+  }
+  .meta-item { display: inline-flex; align-items: center; gap: 8px; }
+  .meta-item svg { color: var(--color-warm-gray); flex-shrink: 0; }
+  .meta-rating svg { color: var(--color-accent); }
+  .meta-rating strong { font-weight: 700; color: var(--color-ink); }
+
+  .booking-cta { width: 100%; }
+  .booking-cta-secondary { margin-top: 10px; }
+  .booking-fine { font-size: 12px; color: var(--color-warm-gray); text-align: center; margin-top: 10px; }
+
+  .booking-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-light-sand);
+  }
+  .booking-foot a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-charcoal);
+    transition: color 140ms;
+  }
+  .booking-foot a:hover { color: var(--color-accent-strong); }
+
+  .fareharbor-embed {
+    margin-bottom: 12px;
+    margin-inline: -8px;
+  }
+  .fareharbor-embed :global(iframe) { width: 100% !important; }
+
+  .other-tours {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  .section-paper { background: var(--color-off-white); border-block: 1px solid var(--color-sand); }
+
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+    .body-grid { grid-template-columns: 1fr; }
+    .booking-card-wrapper { position: static; }
+  }
+  @media (max-width: 540px) {
+    .inclusions { grid-template-columns: 1fr; }
+    .hero-meta { grid-template-columns: 1fr; }
+  }
+</style>

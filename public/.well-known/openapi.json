@@ -1,0 +1,68 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Hobart Food Tour API",
+    "version": "1.0.0",
+    "description": "Public API surface for hobartfoodtour.com.au. Currently a single endpoint that submits a tour enquiry to the bookings team via Resend.",
+    "contact": {
+      "name": "Hobart Food Tour bookings",
+      "email": "info@daves.com.au",
+      "url": "https://hobartfoodtour.com.au/contact/"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "servers": [
+    { "url": "https://hobartfoodtour.com.au" }
+  ],
+  "paths": {
+    "/api/contact/": {
+      "post": {
+        "summary": "Submit a tour enquiry",
+        "description": "Sends an email to the bookings team. Honours form-encoded, multipart and JSON bodies. Spam-protected with a hidden honeypot field.",
+        "operationId": "submitContactEnquiry",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": { "schema": { "$ref": "#/components/schemas/Enquiry" } },
+            "multipart/form-data":             { "schema": { "$ref": "#/components/schemas/Enquiry" } },
+            "application/json":                { "schema": { "$ref": "#/components/schemas/Enquiry" } }
+          }
+        },
+        "responses": {
+          "303": {
+            "description": "Redirects to /contact/ with ?sent=1 on success or ?error=<code> on validation/send failure.",
+            "headers": {
+              "Location": { "schema": { "type": "string" } }
+            }
+          },
+          "405": { "description": "Method not allowed (only POST is supported)." }
+        }
+      },
+      "get": {
+        "summary": "Method not allowed",
+        "responses": { "405": { "description": "Use POST." } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Enquiry": {
+        "type": "object",
+        "required": ["name", "email", "message"],
+        "properties": {
+          "name":          { "type": "string", "maxLength": 200 },
+          "email":         { "type": "string", "format": "email", "maxLength": 200 },
+          "phone":         { "type": "string" },
+          "tour":          { "type": "string", "description": "Slug of the tour the enquirer is interested in (e.g. 'hobart-food-tour')." },
+          "about":         { "type": "string", "description": "Slug of a related tour, used for private-charter enquiries." },
+          "groupSize":     { "type": "string" },
+          "preferredDate": { "type": "string" },
+          "message":       { "type": "string", "maxLength": 5000 },
+          "website":       { "type": "string", "description": "Honeypot — must be empty. Submissions with a value here are silently accepted as a no-op." }
+        }
+      }
+    }
+  }
+}

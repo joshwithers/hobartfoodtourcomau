@@ -1,0 +1,183 @@
+---
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import { breadcrumbSchema } from '~/lib/schema'
+import { SITE, formatDate } from '~/lib/site'
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Privacy', url: '/legal/privacy/' },
+])
+
+const lastUpdated = new Date()
+---
+
+<Base
+  title="Privacy policy"
+  description={`How ${SITE.name} collects, uses, stores and shares personal information. Cookies, your rights, and how to contact us about your data.`}
+  canonical="/legal/privacy/"
+  jsonLd={[breadcrumbs]}
+>
+  <section class="page-hero">
+    <div class="container container-prose">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Privacy' }]} />
+      <span class="kicker">Legal · Privacy</span>
+      <h1 class="page-title">Privacy policy</h1>
+      <p class="page-lede">
+        How we collect, use and look after your personal information when you book a tour, send us an email, or browse this site.
+      </p>
+      <p class="updated">Last updated <time datetime={lastUpdated.toISOString().slice(0, 10)}>{formatDate(lastUpdated)}</time>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-prose prose">
+      <p>
+        {SITE.name} is operated by Daves Travel Group Pty Ltd (ABN {SITE.abn}). When we say <strong>“we”</strong>, <strong>“us”</strong> or <strong>“Daves”</strong> in this policy we mean the company. When we say <strong>“you”</strong> we mean any visitor to this website or any guest, prospective guest or correspondent of ours.
+      </p>
+      <p>
+        This policy covers the {new URL(SITE.url).hostname} website and the {SITE.address.locality} arm of our tour operation. Our group-wide policy is also available at <a href="https://daves.com.au/privacy-policy/" rel="noopener noreferrer external">daves.com.au/privacy-policy</a>.
+      </p>
+
+      <h2>1. What we collect</h2>
+      <p>
+        We collect personal information that you give us directly — for example, when you book a tour, fill in our contact form, request a private charter quote, sign up for the journal, or send us an email or SMS. That information typically includes:
+      </p>
+      <ul>
+        <li>Your name, email address and phone number.</li>
+        <li>Details about your booking — group size, preferred date, dietary requirements, accessibility needs, accommodation pickup address (private charters only).</li>
+        <li>Payment information, processed by our payment partners (we do not store full card details on our servers).</li>
+        <li>Any free-text message or reply you send us.</li>
+      </ul>
+      <p>
+        We also collect a small amount of information automatically when you use this website: your IP address (truncated for analytics), your browser and device type, the pages you view, and the page that referred you. We use this to keep the site working, to fix problems, and to understand which content is useful.
+      </p>
+
+      <h2>2. Why we collect it</h2>
+      <ul>
+        <li>To take and confirm your booking, and to run the tour you've booked.</li>
+        <li>To reply to enquiries, quote private charters and answer dietary or accessibility questions.</li>
+        <li>To send you booking confirmations, pre-tour logistics and post-tour follow-ups.</li>
+        <li>To send you marketing emails — but only if you've opted in. Every marketing email has a one-click unsubscribe.</li>
+        <li>To meet our legal obligations (tax, public liability, food and alcohol-service compliance).</li>
+        <li>To improve the site and our tours.</li>
+      </ul>
+
+      <h2>3. Cookies and similar technologies</h2>
+      <p>
+        A cookie is a small file your browser stores when you visit a website. We use a small number of cookies in three categories:
+      </p>
+      <ul>
+        <li><strong>Functional cookies:</strong> required for the site and the booking flow to work. These are always on.</li>
+        <li><strong>Analytics cookies:</strong> aggregate, IP-truncated visit data so we can see which pages and tours people read. We do not sell or share this data.</li>
+        <li><strong>Marketing cookies:</strong> set by embedded booking widgets (FareHarbor) and, where you've consented, by ad platforms so we can measure whether marketing actually brings guests through the door.</li>
+      </ul>
+      <p>
+        You can clear or block cookies at any time using your browser settings. Blocking functional cookies will break the booking flow.
+      </p>
+
+      <h2>4. Who we share your data with</h2>
+      <p>
+        We share the minimum information necessary with a small number of trusted service providers:
+      </p>
+      <ul>
+        <li><strong>Booking and payment providers</strong> (e.g. FareHarbor, Stripe) to process bookings and payments.</li>
+        <li><strong>Email delivery</strong> (Resend) for transactional and confirmation emails.</li>
+        <li><strong>Hosting and infrastructure</strong> (Cloudflare) which serves this website and processes form submissions.</li>
+        <li><strong>The venues we visit</strong> when relevant — for example, to communicate dietary requirements ahead of your tour.</li>
+        <li><strong>Travel resellers</strong> (GetYourGuide, Klook, Viator) only if you booked through them — and in that case only the booking details required to deliver the tour.</li>
+        <li><strong>Government, regulators or law enforcement</strong> where we're legally required to.</li>
+      </ul>
+      <p>
+        We never sell your personal information.
+      </p>
+
+      <h2>5. Where your data is stored</h2>
+      <p>
+        Daves is an Australian business and we store guest records in Australia. Some of our service providers (notably hosting and email infrastructure) operate globally, which means a copy of your data may be processed outside Australia. We only use providers with comparable privacy and security standards.
+      </p>
+
+      <h2>6. How long we keep it</h2>
+      <p>
+        We keep booking and financial records for at least seven years to meet Australian tax and accounting law. Marketing contacts are kept until you unsubscribe. Contact-form messages are kept for up to two years and then deleted unless they relate to an active booking.
+      </p>
+
+      <h2>7. Your rights</h2>
+      <p>
+        Under Australian privacy law you have the right to:
+      </p>
+      <ul>
+        <li>Ask what personal data we hold about you and get a copy of it.</li>
+        <li>Ask us to correct anything that's wrong.</li>
+        <li>Ask us to delete your data, where we're not required to keep it for tax, legal or safety reasons.</li>
+        <li>Withdraw consent for marketing emails at any time.</li>
+        <li>Make a complaint to the Office of the Australian Information Commissioner (oaic.gov.au) if you think we've mishandled your information.</li>
+      </ul>
+      <p>
+        To exercise any of those rights, email us at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We aim to respond within ten business days.
+      </p>
+
+      <h2>8. Security</h2>
+      <p>
+        We use HTTPS across the entire site, scoped access controls on our internal tools, and reputable processors for payments and email. No system is perfectly secure — but we keep the surface area small on purpose: we don't run a guest-account system on this site, and we don't store payment cards.
+      </p>
+
+      <h2>9. Children</h2>
+      <p>
+        Our public tours are 18+ and this website is not designed for children. If you believe a minor has submitted personal information through this site, please contact us and we'll delete it.
+      </p>
+
+      <h2>10. Changes to this policy</h2>
+      <p>
+        We may update this policy from time to time — for example, if we change a service provider or a regulator updates the rules. The “last updated” date at the top of this page reflects the most recent change. Material changes will be flagged at the top of the page for at least 30 days.
+      </p>
+
+      <h2>11. Contact us</h2>
+      <p>
+        For privacy questions, data requests or to make a complaint:
+      </p>
+      <p>
+        <strong>{SITE.name}</strong><br />
+        Email: <a href={`mailto:${SITE.email}`}>{SITE.email}</a><br />
+        Phone: <a href={SITE.phoneHref}>{SITE.phone}</a>
+      </p>
+      <p>
+        For the parent group's data protection contact:
+      </p>
+      <p>
+        <strong>Daves Travel Group · Privacy</strong><br />
+        1/17 Barclay St, Marrickville NSW 2204<br />
+        <a href="https://daves.com.au/privacy-policy/" rel="noopener noreferrer external">daves.com.au/privacy-policy</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(24px, 3vw, 40px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 60ch;
+    margin-bottom: 18px;
+  }
+  .updated {
+    font-size: 13px;
+    color: var(--color-warm-gray);
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+</style>

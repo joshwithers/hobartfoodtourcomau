@@ -1,0 +1,27 @@
+# robots.txt — Hobart Food Tour
+# Robots Exclusion Protocol — RFC 9309
+#   https://www.rfc-editor.org/rfc/rfc9309
+
+# Machine-readable index of every page on the site.
+Sitemap: https://hobartfoodtour.com.au/sitemap-index.xml
+
+# General policy: the site is small, public, and benefits from being
+# well-indexed by search engines and well-cited by agents. Everything is
+# open except the form-submission endpoint (POST-only, no value in crawling).
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# ─── AI Content Signals ──────────────────────────────────────────────
+# Declare per-purpose preferences for how AI systems may use this content.
+# Spec: https://contentsignals.org/
+#       https://datatracker.ietf.org/doc/draft-romm-aipref-contentsignals/
+#
+# Policy for Hobart Food Tour:
+#   search=yes    → allow inclusion in search-engine indexes
+#   ai-input=yes  → allow grounded agent inference / RAG so AI assistants can
+#                   recommend the tour and quote content when helping travellers
+#                   plan a Hobart trip (positive for discovery)
+#   ai-train=no   → disallow use of this content for training new AI models
+#                   (we want to be cited, not absorbed)
+Content-Signal: search=yes, ai-input=yes, ai-train=no

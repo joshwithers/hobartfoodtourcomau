@@ -1,0 +1,138 @@
+---
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import { breadcrumbSchema } from '~/lib/schema'
+import { SITE, formatDate } from '~/lib/site'
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Accessibility', url: '/legal/accessibility/' },
+])
+
+const lastUpdated = new Date()
+const hostname = new URL(SITE.url).hostname
+---
+
+<Base
+  title="Accessibility statement"
+  description={`How ${hostname} is built for accessibility — WCAG conformance target, technical detail, on-tour access support and how to report a barrier.`}
+  canonical="/legal/accessibility/"
+  jsonLd={[breadcrumbs]}
+>
+  <section class="page-hero">
+    <div class="container container-prose">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Accessibility' }]} />
+      <span class="kicker">Legal · Accessibility</span>
+      <h1 class="page-title">Accessibility statement</h1>
+      <p class="page-lede">
+        We build the site for everyone. Plain HTML first, JavaScript only where it earns its keep, real labels on real form fields, and a way to skip past the chrome to the content you came for.
+      </p>
+      <p class="updated">Last updated <time datetime={lastUpdated.toISOString().slice(0, 10)}>{formatDate(lastUpdated)}</time>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-prose prose">
+      <h2>Our commitment</h2>
+      <p>
+        {SITE.name} is committed to making this website and our tours usable by the widest possible audience, including people with vision, hearing, motor and cognitive disabilities. We aim to meet the <strong>Web Content Accessibility Guidelines (WCAG) 2.2 at Level AA</strong>, and we treat accessibility as a non-negotiable part of the build, not a bolted-on afterthought.
+      </p>
+
+      <h2>How this site is built</h2>
+      <p>
+        The site is statically rendered HTML served from the edge. That means it loads fast on slow connections, works without JavaScript for everything except the FareHarbor booking widget, and degrades gracefully under assistive tech. The specifics:
+      </p>
+      <ul>
+        <li><strong>Semantic HTML.</strong> Every page uses real landmarks — <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code> — so screen-reader users can jump between sections without scrubbing through visual chrome.</li>
+        <li><strong>Skip link.</strong> The first focusable element on every page is <em>“Skip to content”</em>, which jumps past the navigation straight to the main content area.</li>
+        <li><strong>Keyboard navigation.</strong> Every interactive element is reachable via Tab, activatable via Enter or Space, and has a visible focus ring. Tour cards, journal cards and region cards are wrapped in real <code>&lt;a&gt;</code> elements rather than click-handlers, so screen readers announce them as links.</li>
+        <li><strong>ARIA where it adds value, not where it doesn't.</strong> We label primary, mobile and breadcrumb navigation, expose <code>aria-current="page"</code> on the active nav link, and toggle <code>aria-expanded</code> / <code>aria-controls</code> on the mobile menu. Decorative SVG illustrations are marked <code>aria-hidden="true"</code> so they don't pollute the reading experience.</li>
+        <li><strong>Forms have real labels.</strong> Every input on the contact form is paired with a visible <code>&lt;label&gt;</code>, required fields are marked, and validation errors are surfaced as readable text with role <code>alert</code> rather than colour alone. The form works without JavaScript.</li>
+        <li><strong>Language and direction.</strong> Pages are served with <code>lang="en-AU"</code> so screen readers pick the correct voice.</li>
+        <li><strong>Colour contrast.</strong> Body text and interactive elements meet or exceed WCAG AA contrast against their backgrounds. The accent orange is used for emphasis, not as the sole carrier of meaning.</li>
+        <li><strong>Typography.</strong> Inter (body) and Fraunces (display) are loaded with <code>font-display: swap</code> so text never disappears while fonts download. Body sizes use fluid <code>clamp()</code> so the page reflows cleanly between 320px phones and ultrawide desktops.</li>
+        <li><strong>Reduced motion.</strong> Where we use motion (hover lifts, breadcrumb fades) it's purely decorative and never load-bearing for understanding the page.</li>
+        <li><strong>Light and dark UI hints.</strong> We declare <code>theme-color</code> for both colour schemes so the browser chrome blends in either way.</li>
+        <li><strong>Responsive by default.</strong> Single-column on phones, two-column on tablets, multi-column on desktop. No horizontal scroll, no fixed-width assumptions, no pinch-zoom blockers.</li>
+        <li><strong>Time elements.</strong> Dates are wrapped in <code>&lt;time datetime="..."&gt;</code> so screen readers and search engines parse them correctly.</li>
+        <li><strong>Real text, not pictures of text.</strong> All copy is live HTML. Illustrations are decorative SVG.</li>
+      </ul>
+
+      <h2>What we know is imperfect</h2>
+      <p>
+        Two areas where we're still working:
+      </p>
+      <ul>
+        <li>The <strong>FareHarbor booking widget</strong> embedded on tour pages is provided by a third party. It's broadly accessible, but it does not always meet the same standard as the rest of the page. If you would prefer to book without using the widget, please call us on <a href={SITE.phoneHref}>{SITE.phone}</a> or email <a href={`mailto:${SITE.email}`}>{SITE.email}</a> and a human will take the booking.</li>
+        <li>Some illustrations on the site are decorative SVG. They have <code>aria-hidden="true"</code> applied, but if any have escaped that we'd like to know.</li>
+      </ul>
+
+      <h2>Accessibility on tour</h2>
+      <p>
+        The website is one half of the picture; the tour itself is the other. Our food tour walks Salamanca, Battery Point and the Hobart waterfront, and the venues vary in physical access — sandstone cobbles in places, the occasional set of stairs. Because we curate the route by hand, we can normally find a way that works:
+      </p>
+      <ul>
+        <li><strong>Tell us what you need at booking.</strong> Mobility limits, vision or hearing accommodations, sensory needs, dietary restrictions, anxiety triggers — all of it is welcome on the booking form. The more we know, the better the day.</li>
+        <li><strong>Wheelchair-friendly routing</strong> is available with advance notice — we'll re-route around the steeper Salamanca cobbles and any venue with steps.</li>
+        <li><strong>Private groups</strong> are the most flexible option — the itinerary is built around your party and we can pre-screen every venue for step-free access, allergen handling, quiet seating, and so on.</li>
+        <li><strong>Companion cards</strong> are recognised — a companion travels free on the public food tour. Please mention it at booking so we can hold the seat.</li>
+        <li><strong>Service animals</strong> are welcome on every tour and at every venue we visit.</li>
+      </ul>
+
+      <h2>Conformance and testing</h2>
+      <p>
+        We test the site with a combination of automated tools (axe DevTools, Lighthouse) and manual checks: keyboard-only navigation, screen-reader spot checks (VoiceOver on macOS / iOS, TalkBack on Android), and zoom up to 400%. Conformance is reviewed at least quarterly and after any major redesign.
+      </p>
+      <p>
+        We are aiming for, and aspire to maintain, conformance with WCAG 2.2 Level AA. This is a moving target — a small number of pages or third-party widgets may fall short of the standard at any given moment. Where that's the case, we'll fix them.
+      </p>
+
+      <h2>Reporting a barrier</h2>
+      <p>
+        If you hit something on this site or on tour that doesn't work for you, we want to hear about it. We treat every accessibility report as a priority bug.
+      </p>
+      <p>
+        <strong>Email:</strong> <a href={`mailto:${SITE.email}`}>{SITE.email}</a> — please include the page URL and a brief description of what didn't work, plus the device, browser and assistive technology you were using if you can. We aim to acknowledge within two business days and resolve within ten.
+      </p>
+      <p>
+        <strong>Phone:</strong> <a href={SITE.phoneHref}>{SITE.phone}</a> — happy to walk through a booking by phone end-to-end if the site isn't working for you.
+      </p>
+
+      <h2>Standards and references</h2>
+      <ul>
+        <li><a href="https://www.w3.org/TR/WCAG22/" rel="noopener noreferrer external">Web Content Accessibility Guidelines (WCAG) 2.2</a></li>
+        <li><a href="https://www.humanrights.gov.au/our-work/disability-rights/world-wide-web-access-disability-discrimination-act-advisory-notes-ver" rel="noopener noreferrer external">Australian Human Rights Commission · Web access advisory notes</a></li>
+        <li><a href="https://www.legislation.gov.au/Series/C2004A04426" rel="noopener noreferrer external">Disability Discrimination Act 1992 (Cth)</a></li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(24px, 3vw, 40px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 60ch;
+    margin-bottom: 18px;
+  }
+  .updated {
+    font-size: 13px;
+    color: var(--color-warm-gray);
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+</style>

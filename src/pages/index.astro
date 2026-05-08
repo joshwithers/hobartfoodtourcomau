@@ -1,0 +1,117 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '~/layouts/Base.astro'
+import Hero from '~/components/Hero.astro'
+import SectionHead from '~/components/SectionHead.astro'
+import TourCard from '~/components/TourCard.astro'
+import RegionCard from '~/components/RegionCard.astro'
+import JournalCard from '~/components/JournalCard.astro'
+import PressMarquee from '~/components/PressMarquee.astro'
+import AboutStrip from '~/components/AboutStrip.astro'
+import ClosingCTA from '~/components/ClosingCTA.astro'
+import { SITE } from '~/lib/site'
+import { buildOrganizationWithCatalog, destinationSchema } from '~/lib/schema'
+
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order)
+const regions = (await getCollection('regions')).sort((a, b) => a.data.order - b.data.order)
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+)
+
+const featuredTours = tours.filter((t) => t.data.featured).concat(tours.filter((t) => !t.data.featured)).slice(0, 6)
+const featuredPosts = posts.slice(0, 3)
+
+const totalReviews = tours.reduce((sum, t) => sum + t.data.reviewCount, 0)
+const ratedTours = tours.filter((t) => t.data.reviewCount > 0)
+const avgRating = ratedTours.length
+  ? ratedTours.reduce((sum, t) => sum + t.data.rating * t.data.reviewCount, 0) / totalReviews
+  : 4.9
+
+const orgLd = buildOrganizationWithCatalog(tours)
+---
+
+<Base
+  title={SITE.name}
+  description={SITE.description}
+  keywords={[
+    'Hobart food tour',
+    'Salamanca food tour',
+    'Tasmania food tour',
+    'Hobart walking tour',
+    'Daves Eats Hobart',
+  ]}
+  organizationLd={orgLd}
+  jsonLd={[destinationSchema]}
+>
+  <Hero tourCount={tours.length} rating={avgRating} reviewCount={totalReviews} />
+
+  <PressMarquee />
+
+  <section class="section">
+    <div class="container">
+      <SectionHead
+        kicker={`The ${SITE.address.locality} tours`}
+        title="The food tour, plus a few sister Hobart tours rolling out."
+        description="The flagship is the half-day walking food tour — Salamanca, Battery Point and Victoria Dock. Sister tours cover Hobart's pubs, the makers behind the produce, and a Tasmanian wine, whiskey and beer day."
+        actionLabel="See all tours"
+        actionHref="/tours/"
+      />
+      <div class="tour-grid">
+        {featuredTours.map((t) => <TourCard tour={t} />)}
+      </div>
+    </div>
+  </section>
+
+  <AboutStrip />
+
+  <section class="section">
+    <div class="container">
+      <SectionHead
+        kicker="Beyond Hobart"
+        title="Other Daves tours, other cities."
+        description="Sister Daves tours run across Australia. Same booking, same booking-fee policy (zero), same small-group format — different city's pantry."
+        actionLabel="Browse other regions"
+        actionHref="/regions/"
+      />
+      <div class="region-grid">
+        {regions.map((r) => <RegionCard region={r} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-paper">
+    <div class="container journal-grid">
+      <SectionHead
+        kicker="Field journal"
+        title="Recent dispatches"
+        description="Notes from guides on the ground. What's coming off the boat, what's in season, and the occasional very strong opinion about scallop pies."
+        actionLabel="Read the journal"
+        actionHref="/journal/"
+      />
+      <div class="journal-list">
+        {featuredPosts.map((p, i) => <JournalCard post={p} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA />
+</Base>
+
+<style>
+  .section { padding-block: clamp(64px, 6vw, 96px); }
+  .section-paper { background: var(--color-off-white); border-block: 1px solid var(--color-sand); }
+
+  .tour-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .region-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .journal-list { display: flex; flex-direction: column; }
+</style>

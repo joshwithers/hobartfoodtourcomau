@@ -1,0 +1,109 @@
+---
+import '~/styles/global.css'
+import { Font } from 'astro:assets'
+import Header from '~/components/Header.astro'
+import Footer from '~/components/Footer.astro'
+import SEO from '~/components/SEO.astro'
+import JsonLd from '~/components/JsonLd.astro'
+import { organizationSchema, websiteSchema } from '~/lib/schema'
+import { SITE } from '~/lib/site'
+
+interface Props {
+  title: string
+  description?: string
+  canonical?: string
+  ogImage?: string
+  ogType?: 'website' | 'article'
+  noindex?: boolean
+  keywords?: string[]
+  publishedTime?: Date
+  modifiedTime?: Date
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[]
+  /** Override the default static organization schema (used by pages that have the tours collection loaded and want to emit aggregateRating + hasOfferCatalog) */
+  organizationLd?: Record<string, unknown>
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType,
+  noindex,
+  keywords,
+  publishedTime,
+  modifiedTime,
+  jsonLd,
+  organizationLd,
+} = Astro.props
+
+const orgLd = organizationLd ?? (organizationSchema as Record<string, unknown>)
+const baseLd: Record<string, unknown>[] = [orgLd, websiteSchema]
+const allLd = jsonLd
+  ? Array.isArray(jsonLd)
+    ? [...baseLd, ...jsonLd]
+    : [...baseLd, jsonLd]
+  : baseLd
+---
+
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-fraunces" preload />
+
+    <SEO
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      noindex={noindex}
+      keywords={keywords}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+    />
+
+    <JsonLd data={allLd} />
+
+    {SITE.gaId && (
+      <>
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaId}`}></script>
+        <script is:inline set:html={`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${SITE.gaId}');`}></script>
+      </>
+    )}
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: 8px;
+        top: -40px;
+        padding: 8px 12px;
+        background: var(--color-ink);
+        color: var(--color-canvas);
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        z-index: 100;
+        transition: top 160ms;
+      }
+      .skip-link:focus { top: 8px; }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+---
+type Cat = 'beer' | 'craft-beer' | 'cider' | 'distillery' | 'spirits' | 'food' | 'history' | 'private'
+
+interface Props {
+  kind: Cat
+}
+
+const { kind } = Astro.props
+
+const config: Record<Cat, { label: string; color: string }> = {
+  beer: { label: 'Beer', color: 'var(--color-ale)' },
+  'craft-beer': { label: 'Craft Beer', color: 'var(--color-ale)' },
+  cider: { label: 'Cider', color: '#a85a2c' },
+  distillery: { label: 'Distillery', color: '#7a4a2a' },
+  spirits: { label: 'Spirits', color: '#7a4a2a' },
+  food: { label: 'Food', color: 'var(--color-leaf)' },
+  history: { label: 'History', color: 'var(--color-charcoal)' },
+  private: { label: 'Private', color: 'var(--color-vine)' },
+}
+
+const { label, color } = config[kind]
+---
+
+<span class="cat-badge" style={`--cat-color: ${color};`}>
+  <span class="dot"></span>
+  {label}
+</span>
+
+<style>
+  .cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    background: color-mix(in srgb, var(--cat-color) 10%, var(--color-canvas));
+    color: var(--cat-color);
+    border: 1px solid color-mix(in srgb, var(--cat-color) 20%, var(--color-sand));
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--cat-color);
+  }
+</style>

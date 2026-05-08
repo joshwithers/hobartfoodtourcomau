@@ -1,0 +1,166 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Postcard from './Postcard.astro'
+import CategoryBadge from './CategoryBadge.astro'
+import { formatPrice } from '~/lib/site'
+
+interface Props {
+  tour: CollectionEntry<'tours'>
+  compact?: boolean
+}
+
+const { tour, compact = false } = Astro.props
+const href = `/tours/${tour.id}/`
+---
+
+<article class="tour-card card-link">
+  <a href={href} class="card lift">
+    {tour.data.heroImage ? (
+      <figure class="card-illustration">
+        <img
+          src={tour.data.heroImage}
+          alt={tour.data.heroImageAlt ?? ''}
+          loading="lazy"
+          decoding="async"
+        />
+        {tour.data.badge && <span class="card-badge">{tour.data.badge}</span>}
+        {tour.data.durationShort && <span class="card-duration tnum">{tour.data.durationShort}</span>}
+      </figure>
+    ) : (
+      <Postcard
+        scene={tour.data.sceneKey}
+        swatch={tour.data.swatch}
+        durationLabel={tour.data.durationShort}
+        badge={tour.data.badge}
+      />
+    )}
+
+    <div class="card-body">
+      <div class="cat-row" aria-label="Categories">
+        {tour.data.categories.map((c) => <CategoryBadge kind={c as any} />)}
+      </div>
+
+      <h3 class="tour-title">{tour.data.title}</h3>
+
+      {!compact && (
+        <p class="tour-summary">{tour.data.summary}</p>
+      )}
+
+      <div class="meta-row">
+        <span class="meta-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+          <span>{tour.data.duration}</span>
+        </span>
+        <span class="meta-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
+          <span>{tour.data.meetingPoint.split(',')[0]}</span>
+        </span>
+        {tour.data.reviewCount > 0 && (
+          <span class="meta-item meta-rating">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15 9 22 9.5 17 14 18.5 21 12 17.5 5.5 21 7 14 2 9.5 9 9 12 2" /></svg>
+            <span class="tnum"><strong>{tour.data.rating.toFixed(1)}</strong> ({tour.data.reviewCount.toLocaleString('en-AU')})</span>
+          </span>
+        )}
+      </div>
+
+      <div class="card-foot">
+        <div class="price-stack">
+          <span class="price-pre">From</span>
+          <span class="price-amount tnum">{formatPrice(tour.data.price, tour.data.currency)}</span>
+        </div>
+        <span class="card-cta">View tour →</span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .tour-card .card { display: flex; flex-direction: column; height: 100%; }
+  .tour-card a { color: inherit; display: block; height: 100%; }
+
+  .card-illustration {
+    margin: 0;
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background: var(--color-ink);
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .card-illustration img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  .card-badge,
+  .card-duration {
+    position: absolute;
+    top: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(32, 21, 21, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: var(--color-canvas);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .card-badge { left: 12px; background: var(--color-accent-strong); }
+  .card-duration { right: 12px; }
+
+  .card-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .cat-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .tour-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-ink);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .tour-summary {
+    color: var(--color-charcoal);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--color-charcoal);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+  .meta-item { display: inline-flex; align-items: center; gap: 6px; color: var(--color-warm-gray); }
+  .meta-item svg { color: var(--color-warm-gray); }
+  .meta-rating { color: var(--color-charcoal); }
+  .meta-rating svg { color: var(--color-accent); }
+  .meta-rating strong { color: var(--color-ink); font-weight: 600; }
+
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-light-sand);
+  }
+  .price-stack { display: flex; flex-direction: column; line-height: 1; gap: 2px; }
+  .price-pre { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: var(--color-warm-gray); text-transform: uppercase; }
+  .price-amount { font-size: 1.25rem; font-weight: 700; color: var(--color-ink); letter-spacing: -0.02em; }
+  .card-cta { font-size: 0.85rem; font-weight: 600; color: var(--color-accent-strong); }
+</style>

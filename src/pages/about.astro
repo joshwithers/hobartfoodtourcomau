@@ -1,0 +1,107 @@
+---
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import AboutStrip from '~/components/AboutStrip.astro'
+import ClosingCTA from '~/components/ClosingCTA.astro'
+import { aboutPageSchema, breadcrumbSchema } from '~/lib/schema'
+import { SITE } from '~/lib/site'
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'About', url: '/about/' },
+])
+
+const aboutDescription =
+  `${SITE.name} is the flagship Daves tour in Hobart — a small-group walking food tour of Salamanca and the waterfront, run by the local crew since ${SITE.established}.`
+
+const aboutPage = aboutPageSchema('/about/', aboutDescription)
+---
+
+<Base
+  title={`About ${SITE.name}`}
+  description={aboutDescription}
+  canonical="/about/"
+  jsonLd={[breadcrumbs, aboutPage]}
+>
+  <section class="page-hero">
+    <div class="container container-prose">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'About' }]} />
+      <span class="kicker">About us</span>
+      <h1 class="page-title">
+        We take care of the details. You bring <span class="editorial">your appetite.</span>
+      </h1>
+      <p class="page-lede">
+        {SITE.name} is the flagship Daves tour in Hobart — a small-group walking food tour of Salamanca, Battery Point and the Hobart waterfront. Our {SITE.address.locality} crew opened in {SITE.established} with the food tour and a handful of producers we knew. A handful of sister Hobart tours are rolling out behind it.
+      </p>
+    </div>
+  </section>
+
+  <AboutStrip />
+
+  <section class="section">
+    <div class="container container-prose prose">
+      <h2>Our format</h2>
+      <p>
+        Every Daves tour, in every region, follows the same template. A small group (we keep numbers low so you can actually meet the makers, see what's coming off the boat or out of the oven, and ask whatever you want). A local guide. Behind-the-counter access at every stop, not a window into the kitchen. And no booking fees — ever, on any tour, in any region.
+      </p>
+
+      <h2>Who runs it</h2>
+      <p>
+        Daves started eighteen years ago as a single Dave running a single pub tour through Sydney's Rocks. The {SITE.address.locality} crew opened in {SITE.established}. The team is a small bench of guides — all locals, all Dave. We don't put a single name on the door because the company isn't a person, it's the format: small group, local Dave, makers doing the talking.
+      </p>
+      <p>
+        <strong>We are all Dave. Daves is all of us.</strong>
+      </p>
+
+      <h2>What we don't do</h2>
+      <ul>
+        <li>Bus tours with megaphones.</li>
+        <li>Group sizes above 12 on a public tour.</li>
+        <li>Booking fees, ever.</li>
+        <li>Pickups from cruise ships or coach parks (we'll meet you in Salamanca for the public food tour).</li>
+        <li>Generic "Tasmanian food experience" packages we sell to wholesalers.</li>
+        <li>Dynamic pricing — Saturday is the same price as Wednesday.</li>
+      </ul>
+
+      <h2>What we do do, well</h2>
+      <ul>
+        <li>Behind-the-counter access at every food stop.</li>
+        <li>Tastings plated for our group, not pulled off the public counter.</li>
+        <li>Pre-tour planning calls for every private group enquiry.</li>
+        <li>Kid-friendly versions of the food tour at half price under 12.</li>
+        <li>Two business-day turnaround on dietary requirements where the producer can accommodate.</li>
+      </ul>
+
+      <h2>The accreditations</h2>
+      <p>
+        We're a member of the Tourism Industry Council {SITE.address.region} and carry A$20m public liability and professional indemnity cover. We don't sell food ourselves — every bite on every tour is served by the licensed producer we're visiting. We sell directly through this site and through our partner network (GetYourGuide, Klook, Viator) for international guests.
+      </p>
+    </div>
+  </section>
+
+  <ClosingCTA />
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(32px, 3vw, 48px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 60ch;
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+</style>

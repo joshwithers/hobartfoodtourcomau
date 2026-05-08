@@ -1,0 +1,95 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import JournalCard from '~/components/JournalCard.astro'
+import ClosingCTA from '~/components/ClosingCTA.astro'
+import { breadcrumbSchema } from '~/lib/schema'
+import { SITE } from '~/lib/site'
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Field journal', url: '/journal/' },
+])
+
+const blogLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  '@id': new URL('/journal/', SITE.url).href,
+  name: 'The Field Journal',
+  description: `Notes, vintage reports, and field guides from the ${SITE.name} team.`,
+  publisher: { '@id': `${SITE.url}/#organization` },
+  blogPost: posts.map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.data.title,
+    url: new URL(`/journal/${p.id}/`, SITE.url).href,
+    datePublished: p.data.publishDate.toISOString(),
+  })),
+}
+---
+
+<Base
+  title={`The Field Journal · ${SITE.name}`}
+  description={`Notes from the ${SITE.address.locality} guides on the ground — seasonal Tasmanian produce reports, primer guides for first-timers, and strong opinions about scallop pies.`}
+  keywords={[`${SITE.address.locality} food blog`, `Tasmania food journal`, 'Hobart food tour notes']}
+  jsonLd={[breadcrumbs, blogLd]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Field journal' }]} />
+      <span class="kicker">Field journal</span>
+      <h1 class="page-title">
+        What we&apos;ve been <span class="editorial">eating, learning, walking past.</span>
+      </h1>
+      <p class="page-lede">
+        Dispatches from the {SITE.address.locality} crew. What's coming off the boat, what's in season at the orchards, and the occasional strong opinion about which Salamanca bakery to start a Saturday in.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="all-posts-heading">
+    <div class="container container-prose">
+      <h2 id="all-posts-heading" class="sr-only">All journal posts</h2>
+      <div class="post-list">
+        {posts.map((post, i) => <JournalCard post={post} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA
+    title="Like the writing? Come on the tour."
+    description="The journal exists because our guides walk the route every week and have opinions. The fastest way to talk about any of this is in person, with something in your hand."
+    primaryLabel="Book the food tour"
+    primaryHref="/tours/hobart-food-tour/"
+    secondaryLabel="Email the team"
+    secondaryHref="/contact/"
+  />
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(32px, 3vw, 48px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 60ch;
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+  .post-list { display: flex; flex-direction: column; }
+</style>

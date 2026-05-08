@@ -1,0 +1,91 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '~/layouts/Base.astro'
+import TourCard from '~/components/TourCard.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import ClosingCTA from '~/components/ClosingCTA.astro'
+import { breadcrumbSchema, buildOrganizationWithCatalog } from '~/lib/schema'
+import { SITE } from '~/lib/site'
+
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order)
+const totalReviews = tours.reduce((sum, t) => sum + t.data.reviewCount, 0)
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: `${SITE.address.locality} tours`, url: '/tours/' },
+])
+
+const orgLd = buildOrganizationWithCatalog(tours)
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: tours.map((t, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: new URL(`/tours/${t.id}/`, SITE.url).href,
+    name: t.data.title,
+  })),
+}
+---
+
+<Base
+  title={`${SITE.address.locality} food tours & sister Hobart tours`}
+  description={`The flagship ${SITE.address.locality} food tour plus the sister Hobart tours rolling out behind it. Small-group, walking, no booking fees. From A$115.`}
+  keywords={[`${SITE.address.locality} food tour`, 'Salamanca food tour', 'Tasmania food tour', `${SITE.address.locality} walking tour`]}
+  organizationLd={orgLd}
+  jsonLd={[breadcrumbs, itemList]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: `${SITE.address.locality} tours` }]} />
+      <span class="kicker">{tours.length} tours · 1 city · {totalReviews.toLocaleString('en-AU')} reviews</span>
+      <h1 class="page-title">
+        {`Every ${SITE.address.locality} tour we run.`}<br /><span class="editorial">Start with the food tour.</span>
+      </h1>
+      <p class="page-lede">
+        The flagship is the half-day walking food tour, with a handful of sister Hobart tours rolling out behind it. All run by the same crew, all small-group (max 12), all walking. We take care of the details. You bring your appetite.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="all-tours-heading">
+    <div class="container">
+      <h2 id="all-tours-heading" class="sr-only">All {SITE.address.locality} tours</h2>
+      <div class="tour-grid">
+        {tours.map((t) => <TourCard tour={t} />)}
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA />
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(32px, 3vw, 48px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 60ch;
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+  .tour-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+</style>

@@ -1,0 +1,130 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import PostFeature from './PostFeature.astro'
+import { formatDate } from '~/lib/site'
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  index?: number
+  showFeature?: boolean
+}
+
+const { post, index, showFeature = true } = Astro.props
+const href = `/journal/${post.id}/`
+---
+
+<article class="post-card card-link">
+  <a href={href} class="post-card-inner">
+    {showFeature && (
+      <div class="post-thumb">
+        <PostFeature feature={post.data.featureKey} swatch={post.data.featureSwatch} />
+      </div>
+    )}
+
+    <div class="post-text">
+      {typeof index === 'number' && (
+        <span class="post-index tnum">{String(index + 1).padStart(2, '0')}</span>
+      )}
+      <div class="post-meta-row">
+        <span class="kicker post-kicker">{post.data.kicker}</span>
+        <span class="post-meta-dot">·</span>
+        <span class="post-meta-item">{post.data.city}</span>
+        <span class="post-meta-dot">·</span>
+        <span class="post-meta-item">{post.data.readingTime}</span>
+      </div>
+      <h3 class="post-title">{post.data.title}</h3>
+      <p class="post-desc">{post.data.description}</p>
+      <span class="post-date">
+        <time datetime={post.data.publishDate.toISOString()}>{formatDate(post.data.publishDate)}</time>
+      </span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .post-card { display: block; }
+  .post-card a {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px 4px;
+    border-top: 1px solid var(--color-sand);
+    color: inherit;
+    transition: transform 200ms var(--ease-out);
+    position: relative;
+  }
+  .post-card a:hover { transform: translateX(3px); }
+  .post-card a:hover .post-title { color: var(--color-accent-strong); }
+
+  .post-thumb {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+  .post-thumb :global(.post-feature) {
+    aspect-ratio: 16 / 11;
+    border-radius: 10px;
+  }
+
+  .post-text {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .post-index {
+    position: absolute;
+    top: 24px;
+    right: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-warm-gray);
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 720px) {
+    .post-card a {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .post-thumb :global(.post-feature) { aspect-ratio: 16 / 9; }
+    .post-index { top: 30px; }
+  }
+
+  .post-meta-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-warm-gray);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .post-kicker { color: var(--color-accent-strong); font-size: 11px; }
+  .post-meta-item { color: var(--color-charcoal); }
+  .post-meta-dot { color: var(--color-sand); }
+
+  .post-title {
+    font-size: 1.4rem;
+    line-height: 1.2;
+    font-weight: 600;
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+    margin: 0;
+    transition: color 140ms;
+  }
+
+  .post-desc {
+    color: var(--color-charcoal);
+    line-height: 1.55;
+    max-width: 60ch;
+  }
+
+  .post-date {
+    color: var(--color-warm-gray);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+</style>

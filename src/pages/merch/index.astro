@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import MerchCard from '~/components/MerchCard.astro'
+import ClosingCTA from '~/components/ClosingCTA.astro'
+import { breadcrumbSchema } from '~/lib/schema'
+import { SITE } from '~/lib/site'
+
+const items = (await getCollection('merch')).sort((a, b) => a.data.order - b.data.order)
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Merch', url: '/merch/' },
+])
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: items.map((m, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: new URL(`/merch/${m.id}/`, SITE.url).href,
+    name: m.data.title,
+  })),
+}
+---
+
+<Base
+  title={`Merch · ${SITE.name}`}
+  description={`Caps, tees and a small range of ${SITE.name} merch. Shipped from Hobart via FareHarbor checkout, or handed over on the day if you're on a tour.`}
+  keywords={['Hobart Food Tour merch', 'Daves cap', 'Daves tee', 'Tasmanian souvenir']}
+  jsonLd={[breadcrumbs, itemList]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Merch' }]} />
+      <span class="kicker">Merch · {items.length} {items.length === 1 ? 'item' : 'items'}</span>
+      <h1 class="page-title">
+        Wear the tour.<br /><span class="editorial">Eat with the crew.</span>
+      </h1>
+      <p class="page-lede">
+        A small, slow range of {SITE.name} kit. Embroidered caps, screenprinted tees, shipped from Hobart. Sizes are selected at the FareHarbor checkout. On a tour with us? Your guide can hand it to you on the day.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="merch-grid-heading">
+    <div class="container">
+      <h2 id="merch-grid-heading" class="sr-only">All merch</h2>
+      <div class="merch-grid">
+        {items.map((m) => <MerchCard item={m} />)}
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA />
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(32px, 3vw, 48px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 60ch;
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+  .merch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+  }
+</style>

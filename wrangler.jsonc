@@ -1,0 +1,24 @@
+{
+	// Contact form sends via Resend (from address verified on your domain).
+	// Set the API key as a Worker secret:
+	//   npx wrangler secret put RESEND_API_KEY
+	// Optional public overrides (defaults: info@daves.com.au / noreply@davesgroup.com.au):
+	//   "vars": { "CONTACT_TO_EMAIL": "...", "CONTACT_FROM_EMAIL": "..." }
+	"compatibility_date": "2026-04-30",
+	"compatibility_flags": [
+		"global_fetch_strictly_public"
+	],
+	"name": "hobart-food-tour",
+	"main": "@astrojs/cloudflare/entrypoints/server",
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS",
+		// Markdown for Agents: the worker wrapper (scripts/wrap-worker.mjs) needs to
+		// run before the static asset binding so it can intercept `Accept: text/markdown`
+		// and serve a sibling .md file. Set false again if you remove that wrapper.
+		"run_worker_first": true
+	},
+	"observability": {
+		"enabled": true
+	}
+}

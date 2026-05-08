@@ -1,0 +1,251 @@
+---
+interface Image {
+  src: string
+  alt: string
+}
+
+interface Props {
+  hero: Image
+  gallery: Image[]
+}
+
+const { hero, gallery } = Astro.props
+
+// The hero is always the first slide; gallery follows. De-dupe by src so an
+// accidental overlap between hero and the first gallery image (a common edit
+// mistake when wiring placeholder images) doesn't render the same shot twice.
+const seen = new Set<string>()
+const slides: Image[] = [hero, ...gallery].filter((img) => {
+  if (seen.has(img.src)) return false
+  seen.add(img.src)
+  return true
+})
+---
+
+<div class="merch-gallery" data-merch-gallery aria-roledescription="carousel" aria-label="Product images">
+  <div class="gallery-stage">
+    <ul class="gallery-track" role="list">
+      {slides.map((img, i) => (
+        <li
+          class={`gallery-slide${i === 0 ? ' is-active' : ''}`}
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`Image ${i + 1} of ${slides.length}`}
+          aria-hidden={i === 0 ? undefined : 'true'}
+          data-index={i}
+        >
+          <img
+            src={img.src}
+            alt={img.alt}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+            fetchpriority={i === 0 ? 'high' : undefined}
+            width="800"
+            height="1000"
+          />
+        </li>
+      ))}
+    </ul>
+
+    {slides.length > 1 && (
+      <>
+        <button type="button" class="gallery-arrow gallery-prev" data-merch-prev aria-label="Previous image">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button type="button" class="gallery-arrow gallery-next" data-merch-next aria-label="Next image">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </>
+    )}
+
+    {slides.length > 1 && (
+      <div class="gallery-counter tnum" aria-live="polite">
+        <span data-merch-counter>1</span> / <span>{slides.length}</span>
+      </div>
+    )}
+  </div>
+
+  {slides.length > 1 && (
+    <ul class="gallery-thumbs" role="tablist" aria-label="Image thumbnails">
+      {slides.map((img, i) => (
+        <li role="presentation">
+          <button
+            type="button"
+            class={`gallery-thumb${i === 0 ? ' is-active' : ''}`}
+            role="tab"
+            aria-selected={i === 0 ? 'true' : 'false'}
+            aria-label={`Show image ${i + 1}`}
+            data-merch-thumb
+            data-index={i}
+          >
+            <img src={img.src} alt="" loading="lazy" decoding="async" width="100" height="120" />
+          </button>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
+<style>
+  .merch-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .gallery-stage {
+    position: relative;
+    border: 1px solid var(--color-sand);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--color-ink);
+    aspect-ratio: 4 / 5;
+  }
+  .gallery-track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .gallery-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 280ms ease;
+    pointer-events: none;
+  }
+  .gallery-slide.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .gallery-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(255, 254, 251, 0.92);
+    color: var(--color-ink);
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    transition: background-color 160ms, transform 160ms;
+  }
+  .gallery-arrow:hover { background: var(--color-canvas); }
+  .gallery-arrow:focus-visible { outline: 2px solid var(--color-accent-strong); outline-offset: 2px; }
+  .gallery-prev { left: 12px; }
+  .gallery-next { right: 12px; }
+
+  .gallery-counter {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(32, 21, 21, 0.65);
+    color: var(--color-canvas);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .gallery-thumbs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .gallery-thumb {
+    width: 64px;
+    height: 80px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--color-ink);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 160ms, transform 160ms;
+  }
+  .gallery-thumb:hover { transform: translateY(-2px); }
+  .gallery-thumb.is-active { border-color: var(--color-accent-strong); }
+  .gallery-thumb:focus-visible { outline: 2px solid var(--color-accent-strong); outline-offset: 2px; }
+  .gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+</style>
+
+<script>
+  function initGalleries() {
+    const galleries = document.querySelectorAll<HTMLElement>('[data-merch-gallery]')
+    for (const gallery of galleries) {
+      const slides = Array.from(gallery.querySelectorAll<HTMLElement>('.gallery-slide'))
+      const thumbs = Array.from(gallery.querySelectorAll<HTMLButtonElement>('[data-merch-thumb]'))
+      const prevBtn = gallery.querySelector<HTMLButtonElement>('[data-merch-prev]')
+      const nextBtn = gallery.querySelector<HTMLButtonElement>('[data-merch-next]')
+      const counter = gallery.querySelector<HTMLElement>('[data-merch-counter]')
+      if (slides.length < 2) continue
+
+      let active = 0
+
+      function show(next: number) {
+        active = (next + slides.length) % slides.length
+        slides.forEach((slide, i) => {
+          const isActive = i === active
+          slide.classList.toggle('is-active', isActive)
+          if (isActive) slide.removeAttribute('aria-hidden')
+          else slide.setAttribute('aria-hidden', 'true')
+        })
+        thumbs.forEach((thumb, i) => {
+          const isActive = i === active
+          thumb.classList.toggle('is-active', isActive)
+          thumb.setAttribute('aria-selected', isActive ? 'true' : 'false')
+        })
+        if (counter) counter.textContent = String(active + 1)
+      }
+
+      prevBtn?.addEventListener('click', () => show(active - 1))
+      nextBtn?.addEventListener('click', () => show(active + 1))
+      thumbs.forEach((thumb, i) => {
+        thumb.addEventListener('click', () => show(i))
+      })
+
+      // Keyboard navigation while the gallery has focus
+      gallery.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); show(active - 1) }
+        if (e.key === 'ArrowRight') { e.preventDefault(); show(active + 1) }
+      })
+
+      // Touch swipe
+      let touchStart = 0
+      gallery.addEventListener('touchstart', (e) => { touchStart = e.touches[0].clientX }, { passive: true })
+      gallery.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].clientX - touchStart
+        if (Math.abs(dx) < 40) return
+        show(dx < 0 ? active + 1 : active - 1)
+      }, { passive: true })
+    }
+  }
+  initGalleries()
+</script>

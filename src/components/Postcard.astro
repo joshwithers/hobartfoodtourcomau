@@ -1,0 +1,364 @@
+---
+type SceneKey = 'hops' | 'pub' | 'distillery' | 'bridge' | 'lake' | 'axes' | 'bus' | 'beers' | 'crowd'
+
+interface Props {
+  scene: SceneKey
+  swatch: [string, string, string]
+  label?: string
+  durationLabel?: string
+  badge?: string
+  rounded?: boolean
+}
+
+const {
+  scene,
+  swatch,
+  label,
+  durationLabel,
+  badge,
+  rounded = true,
+} = Astro.props
+
+const [a, b, c] = swatch
+---
+
+<div class={`postcard ${rounded ? 'rounded' : ''}`} aria-hidden="true">
+  <svg viewBox="0 0 360 240" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id={`sky-${scene}`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color={a} stop-opacity="0.95" />
+        <stop offset="100%" stop-color={a} stop-opacity="0.55" />
+      </linearGradient>
+      <pattern id={`dots-${scene}`} width="10" height="10" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="1" fill="rgba(0,0,0,0.08)" />
+      </pattern>
+    </defs>
+
+    <rect width="360" height="240" fill={`url(#sky-${scene})`} />
+    <rect width="360" height="240" fill={`url(#dots-${scene})`} />
+
+    {scene === 'hops' && (
+      <>
+        {/* fermenter tanks */}
+        <g>
+          {[60, 160, 260].map((x, i) => (
+            <g>
+              <rect x={x - 24} y={90 + i * 4} width="48" height="100" rx="6" fill={c} opacity="0.92" />
+              <rect x={x - 18} y={94 + i * 4} width="36" height="20" rx="2" fill={b} opacity="0.6" />
+              <circle cx={x} cy={130 + i * 4} r="6" fill={a} opacity="0.7" />
+            </g>
+          ))}
+        </g>
+        {/* hop bines */}
+        <g stroke={b} stroke-width="2" fill="none" opacity="0.7">
+          <path d="M40 50 Q60 80 50 110 T70 170" />
+          <path d="M310 40 Q295 70 305 100 T290 165" />
+        </g>
+        {/* ground line */}
+        <rect x="0" y="195" width="360" height="45" fill={c} opacity="0.85" />
+      </>
+    )}
+
+    {scene === 'pub' && (
+      <>
+        {/* sun glow */}
+        <circle cx="280" cy="60" r="40" fill={b} opacity="0.55" />
+        {/* distant skyline */}
+        <rect x="0" y="140" width="360" height="2" fill={c} opacity="0.4" />
+        {/* pub building */}
+        <g>
+          <rect x="80" y="110" width="200" height="100" rx="2" fill={c} opacity="0.92" />
+          <polygon points="80,110 180,80 280,110" fill={c} opacity="0.95" />
+          {[0, 1, 2, 3].map((i) => (
+            <rect x={100 + i * 45} y="140" width="28" height="34" fill={b} opacity="0.7" />
+          ))}
+          <rect x="170" y="160" width="22" height="50" fill={a} opacity="0.85" />
+          <rect x="155" y="118" width="50" height="14" fill={b} opacity="0.85" />
+        </g>
+        {/* ground */}
+        <rect x="0" y="210" width="360" height="30" fill={c} opacity="0.5" />
+        {/* tiny figures */}
+        <circle cx="60" cy="208" r="4" fill={b} />
+        <circle cx="305" cy="208" r="4" fill={b} />
+      </>
+    )}
+
+    {scene === 'distillery' && (
+      <>
+        {/* still pots */}
+        <g>
+          <ellipse cx="120" cy="155" rx="55" ry="40" fill={c} opacity="0.92" />
+          <rect x="110" y="60" width="20" height="100" fill={c} opacity="0.92" />
+          <rect x="100" y="50" width="40" height="14" fill={b} />
+          <ellipse cx="240" cy="160" rx="48" ry="35" fill={c} opacity="0.92" />
+          <rect x="230" y="75" width="20" height="90" fill={c} opacity="0.92" />
+          <rect x="220" y="65" width="40" height="14" fill={b} />
+        </g>
+        {/* connecting pipe */}
+        <path d="M150 100 Q180 70 220 100" stroke={a} stroke-width="6" fill="none" />
+        {/* ground */}
+        <rect x="0" y="200" width="360" height="40" fill={c} opacity="0.7" />
+      </>
+    )}
+
+    {scene === 'bridge' && (
+      <>
+        {/* lake */}
+        <rect x="0" y="160" width="360" height="80" fill={b} opacity="0.85" />
+        {/* bridge arches */}
+        <g stroke={c} stroke-width="6" fill="none">
+          <path d="M40 160 Q90 110 140 160" />
+          <path d="M140 160 Q190 110 240 160" />
+          <path d="M240 160 Q290 110 340 160" />
+        </g>
+        {/* deck */}
+        <rect x="20" y="155" width="320" height="6" fill={c} />
+        {/* ripples */}
+        <g stroke={a} stroke-width="1.5" fill="none" opacity="0.5">
+          <path d="M60 195 Q80 200 100 195" />
+          <path d="M150 210 Q175 215 200 210" />
+          <path d="M260 200 Q280 205 300 200" />
+        </g>
+      </>
+    )}
+
+    {scene === 'lake' && (
+      <>
+        {/* mountain */}
+        <polygon points="0,180 80,90 160,180" fill={c} opacity="0.9" />
+        <polygon points="120,180 220,80 320,180" fill={c} opacity="0.95" />
+        {/* lake */}
+        <rect x="0" y="170" width="360" height="70" fill={b} opacity="0.85" />
+        {/* boats */}
+        {[170, 180, 195, 205].map((y, i) => (
+          <ellipse cx={80 + i * 70} cy={y + 10} rx="14" ry="3" fill={a} opacity="0.7" />
+        ))}
+      </>
+    )}
+
+    {scene === 'axes' && (
+      <>
+        {/* log plank */}
+        <rect x="0" y="180" width="360" height="34" fill={c} opacity="0.88" />
+        <ellipse cx="0" cy="197" rx="14" ry="17" fill={c} opacity="0.95" />
+        <ellipse cx="360" cy="197" rx="14" ry="17" fill={c} opacity="0.95" />
+        <g stroke={b} stroke-width="1.2" fill="none" opacity="0.45">
+          <ellipse cx="0" cy="197" rx="9" ry="11" />
+          <ellipse cx="0" cy="197" rx="5" ry="6" />
+          <ellipse cx="360" cy="197" rx="9" ry="11" />
+          <ellipse cx="360" cy="197" rx="5" ry="6" />
+        </g>
+        {/* crossed axes */}
+        <g transform="translate(180 110)">
+          <g transform="rotate(-28)">
+            <rect x="-7" y="-90" width="14" height="180" fill={c} opacity="0.95" rx="3" />
+            <path d="M-50 -104 L48 -104 L60 -78 L34 -68 Q0 -58 -34 -68 L-60 -78 Z" fill={b} opacity="0.95" />
+            <rect x="-9" y="86" width="18" height="14" fill={a} opacity="0.95" rx="2" />
+          </g>
+          <g transform="rotate(28)">
+            <rect x="-7" y="-90" width="14" height="180" fill={c} opacity="0.95" rx="3" />
+            <path d="M-50 -104 L48 -104 L60 -78 L34 -68 Q0 -58 -34 -68 L-60 -78 Z" fill={b} opacity="0.95" />
+            <rect x="-9" y="86" width="18" height="14" fill={a} opacity="0.95" rx="2" />
+          </g>
+          {/* center bolt */}
+          <circle cx="0" cy="0" r="6" fill={b} opacity="0.9" />
+          <circle cx="0" cy="0" r="2.5" fill={c} />
+        </g>
+      </>
+    )}
+
+    {scene === 'bus' && (
+      <>
+        {/* horizon */}
+        <rect x="0" y="170" width="360" height="2" fill={c} opacity="0.4" />
+        {/* hills */}
+        <ellipse cx="80" cy="180" rx="100" ry="20" fill={c} opacity="0.35" />
+        <ellipse cx="290" cy="180" rx="120" ry="22" fill={c} opacity="0.4" />
+        {/* road */}
+        <rect x="0" y="200" width="360" height="40" fill={c} opacity="0.85" />
+        <g fill={b} opacity="0.7">
+          <rect x="20" y="218" width="22" height="3" />
+          <rect x="80" y="218" width="22" height="3" />
+          <rect x="140" y="218" width="22" height="3" />
+          <rect x="200" y="218" width="22" height="3" />
+          <rect x="260" y="218" width="22" height="3" />
+          <rect x="320" y="218" width="22" height="3" />
+        </g>
+        {/* bus body */}
+        <g>
+          <rect x="44" y="92" width="272" height="108" rx="14" fill={c} opacity="0.95" />
+          {/* roof line */}
+          <rect x="44" y="98" width="272" height="4" fill={a} opacity="0.6" />
+          {/* windows */}
+          <rect x="60" y="108" width="42" height="34" rx="3" fill={b} opacity="0.75" />
+          <rect x="108" y="108" width="42" height="34" rx="3" fill={b} opacity="0.75" />
+          <rect x="156" y="108" width="42" height="34" rx="3" fill={b} opacity="0.75" />
+          <rect x="204" y="108" width="42" height="34" rx="3" fill={b} opacity="0.75" />
+          {/* windscreen */}
+          <path d="M252 108 L300 108 L304 142 L252 142 Z" fill={b} opacity="0.75" />
+          {/* side panel + beer mug */}
+          <rect x="60" y="152" width="200" height="38" rx="3" fill={a} opacity="0.55" />
+          <g transform="translate(160 171)">
+            <rect x="-16" y="-13" width="22" height="26" rx="2" fill="#fffefb" opacity="0.95" />
+            <rect x="-16" y="-13" width="22" height="6" fill={b} opacity="0.95" />
+            <path d="M6 -8 Q14 -8 14 0 Q14 8 6 8" stroke="#fffefb" stroke-width="3" fill="none" opacity="0.95" />
+            <rect x="-13" y="-5" width="16" height="16" fill={b} opacity="0.6" />
+          </g>
+          {/* headlight + door */}
+          <rect x="270" y="160" width="32" height="30" rx="3" fill={a} opacity="0.65" />
+          <circle cx="306" cy="172" r="5" fill={b} opacity="0.95" />
+          {/* wheel wells */}
+          <circle cx="100" cy="200" r="22" fill="#201515" />
+          <circle cx="100" cy="200" r="9" fill={c} />
+          <circle cx="260" cy="200" r="22" fill="#201515" />
+          <circle cx="260" cy="200" r="9" fill={c} />
+          <circle cx="100" cy="200" r="3" fill={b} />
+          <circle cx="260" cy="200" r="3" fill={b} />
+        </g>
+      </>
+    )}
+
+    {scene === 'beers' && (
+      <>
+        {/* counter */}
+        <rect x="0" y="198" width="360" height="42" fill={c} opacity="0.9" />
+        <rect x="0" y="194" width="360" height="5" fill={c} />
+        {/* shelf line */}
+        <rect x="0" y="62" width="360" height="2" fill={c} opacity="0.3" />
+        {/* three pints */}
+        <g>
+          <path d="M48 88 L112 88 L108 198 L52 198 Z" fill={b} opacity="0.4" />
+          <path d="M52 108 L108 108 L104 196 L56 196 Z" fill={b} opacity="0.92" />
+          <ellipse cx="80" cy="88" rx="32" ry="9" fill="#fffefb" opacity="0.97" />
+          <circle cx="64" cy="80" r="7" fill="#fffefb" opacity="0.92" />
+          <circle cx="80" cy="76" r="8" fill="#fffefb" opacity="0.95" />
+          <circle cx="98" cy="80" r="7" fill="#fffefb" opacity="0.92" />
+          <rect x="58" y="116" width="4" height="74" fill="#fffefb" opacity="0.4" rx="2" />
+          <circle cx="80" cy="140" r="2.4" fill="#fffefb" opacity="0.6" />
+          <circle cx="72" cy="160" r="1.8" fill="#fffefb" opacity="0.55" />
+          <circle cx="92" cy="170" r="2" fill="#fffefb" opacity="0.5" />
+
+          <path d="M148 88 L212 88 L208 198 L152 198 Z" fill={b} opacity="0.4" />
+          <path d="M152 108 L208 108 L204 196 L156 196 Z" fill={b} opacity="0.92" />
+          <ellipse cx="180" cy="88" rx="32" ry="9" fill="#fffefb" opacity="0.97" />
+          <circle cx="164" cy="80" r="7" fill="#fffefb" opacity="0.92" />
+          <circle cx="180" cy="76" r="8" fill="#fffefb" opacity="0.95" />
+          <circle cx="198" cy="80" r="7" fill="#fffefb" opacity="0.92" />
+          <rect x="158" y="116" width="4" height="74" fill="#fffefb" opacity="0.4" rx="2" />
+          <circle cx="178" cy="135" r="2.4" fill="#fffefb" opacity="0.6" />
+          <circle cx="186" cy="155" r="1.8" fill="#fffefb" opacity="0.55" />
+          <circle cx="172" cy="172" r="2" fill="#fffefb" opacity="0.5" />
+
+          <path d="M248 88 L312 88 L308 198 L252 198 Z" fill={b} opacity="0.4" />
+          <path d="M252 108 L308 108 L304 196 L256 196 Z" fill={b} opacity="0.92" />
+          <ellipse cx="280" cy="88" rx="32" ry="9" fill="#fffefb" opacity="0.97" />
+          <circle cx="264" cy="80" r="7" fill="#fffefb" opacity="0.92" />
+          <circle cx="280" cy="76" r="8" fill="#fffefb" opacity="0.95" />
+          <circle cx="298" cy="80" r="7" fill="#fffefb" opacity="0.92" />
+          <rect x="258" y="116" width="4" height="74" fill="#fffefb" opacity="0.4" rx="2" />
+          <circle cx="282" cy="138" r="2.4" fill="#fffefb" opacity="0.6" />
+          <circle cx="274" cy="158" r="1.8" fill="#fffefb" opacity="0.55" />
+          <circle cx="290" cy="170" r="2" fill="#fffefb" opacity="0.5" />
+        </g>
+      </>
+    )}
+
+    {scene === 'crowd' && (
+      <>
+        {/* sun glow */}
+        <circle cx="300" cy="58" r="34" fill={b} opacity="0.55" />
+        {/* horizon */}
+        <rect x="0" y="188" width="360" height="2" fill={c} opacity="0.35" />
+        {/* ground */}
+        <rect x="0" y="198" width="360" height="42" fill={c} opacity="0.88" />
+        {/* people with raised drinks */}
+        <g>
+          {/* p1 */}
+          <circle cx="56" cy="118" r="14" fill={c} opacity="0.95" />
+          <path d="M36 198 L36 144 Q36 136 46 136 L66 136 Q76 136 76 144 L76 198 Z" fill={c} opacity="0.95" />
+          <g transform="rotate(28 78 124)">
+            <rect x="76" y="92" width="6" height="38" fill={c} opacity="0.95" />
+            <rect x="68" y="78" width="22" height="18" rx="2" fill={b} opacity="0.95" />
+            <rect x="68" y="78" width="22" height="5" fill="#fffefb" opacity="0.9" />
+          </g>
+          {/* p2 (taller) */}
+          <circle cx="128" cy="100" r="15" fill={c} opacity="0.95" />
+          <path d="M106 198 L106 128 Q106 120 116 120 L142 120 Q152 120 152 128 L152 198 Z" fill={c} opacity="0.95" />
+          <g transform="rotate(-26 110 108)">
+            <rect x="107" y="76" width="6" height="38" fill={c} opacity="0.95" />
+            <rect x="98" y="62" width="22" height="18" rx="2" fill={b} opacity="0.95" />
+            <rect x="98" y="62" width="22" height="5" fill="#fffefb" opacity="0.9" />
+          </g>
+          {/* p3 */}
+          <circle cx="200" cy="116" r="14" fill={c} opacity="0.95" />
+          <path d="M180 198 L180 142 Q180 134 190 134 L210 134 Q220 134 220 142 L220 198 Z" fill={c} opacity="0.95" />
+          <g transform="rotate(22 222 122)">
+            <rect x="220" y="90" width="6" height="38" fill={c} opacity="0.95" />
+            <rect x="212" y="76" width="22" height="18" rx="2" fill={b} opacity="0.95" />
+            <rect x="212" y="76" width="22" height="5" fill="#fffefb" opacity="0.9" />
+          </g>
+          {/* p4 */}
+          <circle cx="270" cy="124" r="14" fill={c} opacity="0.95" />
+          <path d="M250 198 L250 150 Q250 142 260 142 L280 142 Q290 142 290 150 L290 198 Z" fill={c} opacity="0.95" />
+          <g transform="rotate(-18 252 132)">
+            <rect x="249" y="100" width="6" height="38" fill={c} opacity="0.95" />
+            <rect x="240" y="86" width="22" height="18" rx="2" fill={b} opacity="0.95" />
+            <rect x="240" y="86" width="22" height="5" fill="#fffefb" opacity="0.9" />
+          </g>
+        </g>
+        {/* confetti */}
+        <g fill={b}>
+          <circle cx="40" cy="40" r="3" opacity="0.85" />
+          <circle cx="78" cy="58" r="2.4" opacity="0.7" />
+          <circle cx="160" cy="32" r="3" opacity="0.85" />
+          <circle cx="220" cy="46" r="2.4" opacity="0.7" />
+          <circle cx="332" cy="108" r="3" opacity="0.85" />
+          <rect x="116" y="48" width="6" height="2.5" opacity="0.7" transform="rotate(20 119 49)" />
+          <rect x="246" y="80" width="6" height="2.5" opacity="0.7" transform="rotate(-30 249 81)" />
+        </g>
+      </>
+    )}
+
+    {/* paper label */}
+    {label && (
+      <g>
+        <rect x="18" y="18" width="120" height="26" rx="3" fill="rgba(255,254,251,0.92)" stroke="rgba(0,0,0,0.15)" stroke-width="0.5" />
+        <text x="78" y="35" text-anchor="middle" font-family="var(--font-display)" font-weight="700" font-size="11" fill="#201515" letter-spacing="2.5">
+          {label.toUpperCase()}
+        </text>
+      </g>
+    )}
+
+    {/* duration tag */}
+    {durationLabel && (
+      <g>
+        <rect x="280" y="200" width="64" height="22" rx="11" fill="#201515" />
+        <text x="312" y="215" text-anchor="middle" font-family="var(--font-display)" font-weight="600" font-size="10" fill="#fffefb" letter-spacing="1">
+          {durationLabel.toUpperCase()}
+        </text>
+      </g>
+    )}
+
+    {/* badge */}
+    {badge && (
+      <g>
+        <rect x="220" y="18" width="124" height="26" rx="3" fill="#ff4f00" />
+        <text x="282" y="35" text-anchor="middle" font-family="var(--font-display)" font-weight="700" font-size="11" fill="#fffefb" letter-spacing="1.5">
+          {badge.toUpperCase()}
+        </text>
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .postcard {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--color-light-sand);
+  }
+  .postcard.rounded { border-radius: 12px; }
+  .postcard svg { width: 100%; height: 100%; display: block; }
+</style>

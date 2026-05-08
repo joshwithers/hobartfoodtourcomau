@@ -1,0 +1,184 @@
+---
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import { breadcrumbSchema } from '~/lib/schema'
+import { SITE, formatDate } from '~/lib/site'
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Terms & conditions', url: '/legal/terms/' },
+])
+
+const lastUpdated = new Date()
+---
+
+<Base
+  title="Terms & conditions"
+  description={`Booking conditions, cancellation and refund policy, age and ID requirements, alcohol policy and other terms for ${SITE.name}.`}
+  canonical="/legal/terms/"
+  jsonLd={[breadcrumbs]}
+>
+  <section class="page-hero">
+    <div class="container container-prose">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Terms & conditions' }]} />
+      <span class="kicker">Legal · Terms</span>
+      <h1 class="page-title">Terms & conditions</h1>
+      <p class="page-lede">
+        The conditions of carriage for our public tours and private charters. We've kept this short, plain-English and at the top of the page where it belongs.
+      </p>
+      <p class="updated">Last updated <time datetime={lastUpdated.toISOString().slice(0, 10)}>{formatDate(lastUpdated)}</time>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-prose prose">
+      <p>
+        These terms apply to all bookings made with {SITE.name}, operated by Daves Travel Group Pty Ltd (ABN {SITE.abn}). When you confirm a booking — through this website, by phone, by email, or via a partner platform — you agree to these conditions on behalf of every guest in your booking.
+      </p>
+
+      <h2>1. Bookings</h2>
+      <p>
+        Bookings are confirmed once payment (or deposit, where applicable) is received. We'll send a confirmation by email — please check it on receipt and tell us straight away if anything is wrong. We can hold up to 6 guests on a single online booking. For groups larger than 6 please <a href="/contact/">contact us</a> for a private charter quote.
+      </p>
+
+      <h2>2. Pricing</h2>
+      <p>
+        All prices on this site are in Australian dollars (AUD), include GST, and are per guest unless explicitly stated otherwise. We don't charge booking fees on direct bookings. Prices do not include personal expenses such as additional drinks, takeaway purchases at venues, or transport to the meeting point.
+      </p>
+
+      <h2>3. Age, ID and capacity</h2>
+      <p>
+        Our public tours are <strong>18 and over</strong>. We are required by law to refuse service to anyone who can't produce valid photo ID on request. Bring an Australian driver licence, proof-of-age card, passport, or international equivalent.
+      </p>
+      <p>
+        Guests under 18 are generally not permitted on public tours and may only join a private charter with written permission from us and accompanied by their parent or legal guardian. Contact us in advance if this applies — most under-18 requests are best handled as a custom private charter.
+      </p>
+
+      <h2>4. Cancellations and changes — public tours</h2>
+      <p>
+        We understand plans change. The following applies to cancellations of public-tour bookings made directly with us:
+      </p>
+      <ul>
+        <li><strong>30 or more days before departure:</strong> full refund, less any non-refundable third-party deposit.</li>
+        <li><strong>15–30 days before departure:</strong> 50% refund.</li>
+        <li><strong>0–14 days before departure:</strong> no refund.</li>
+      </ul>
+      <p>To change the date of a public-tour booking:</p>
+      <ul>
+        <li><strong>15 or more days before departure:</strong> no transfer fee.</li>
+        <li><strong>3–14 days before departure:</strong> A$25 per guest transfer fee.</li>
+        <li><strong>0–3 days before departure:</strong> 100% credit toward a future tour, no cash refund.</li>
+      </ul>
+      <p>
+        Bookings made through a third-party platform (Viator, GetYourGuide, Klook, hotel concierges, etc.) are subject to that platform's cancellation policy — please refer to your booking confirmation.
+      </p>
+
+      <h2>5. Cancellations and changes — private charters</h2>
+      <p>
+        Private charters require a non-refundable 25% deposit at booking. The remaining balance is payable 14 days before departure. Cancellation 14 or more days before departure forfeits the deposit only. Cancellation inside 14 days forfeits the full charter fee, as we've turned away other work to hold your date.
+      </p>
+
+      <h2>6. Cancellations by us</h2>
+      <p>
+        Very occasionally we may have to cancel a tour — for safety reasons, if minimum numbers aren't met, or if a venue we depend on becomes unavailable. If we cancel, we'll do everything we can to: (a) move you to another available date, (b) offer a credit, or (c) provide a full refund — your choice. We are not liable for incidental costs (flights, accommodation, lost annual leave) tied to a cancelled tour, so we recommend travel insurance if you're travelling specifically to join a tour.
+      </p>
+
+      <h2>7. Weather</h2>
+      <p>
+        Our tours run rain, hail or shine. Please dress for the day and bring a layer. We will only cancel for weather where it would be genuinely unsafe to do so (e.g. extreme heat day, severe storm). In that case the cancellation policy in section 6 applies.
+      </p>
+
+      <h2>8. Alcohol policy and conduct</h2>
+      <p>
+        We are a craft drinks tour, but excessive drinking on our tours is firmly discouraged. Alcohol on every tour is served by the licensed venue we're visiting — never by us — and venues are required by law to refuse service to intoxicated guests. We may refuse entry to or remove from the tour any guest who:
+      </p>
+      <ul>
+        <li>Cannot produce valid photo ID on request.</li>
+        <li>Is intoxicated or behaves in a way that creates a safety or comfort issue for other guests, our crew or venue staff.</li>
+        <li>Brings their own alcohol on the tour vehicle, or attempts to.</li>
+      </ul>
+      <p>
+        Removed guests are responsible for their own onward transport and are not entitled to a refund. We always run a designated-driver / non-drinker option at the same price as the standard ticket — please tell us at booking if that's you.
+      </p>
+
+      <h2>9. Dietary requirements and allergies</h2>
+      <p>
+        We work with venues that plate for our group. Dietary requirements (vegetarian, vegan, gluten-free, halal, kosher, allergens) must be noted at booking or at least 48 hours before departure so we can brief the venues. We can normally cater for any reasonable dietary requirement with notice, but cannot guarantee a trace-free environment for severe allergies. Please contact us before booking if anyone in your party has an anaphylactic-grade allergy.
+      </p>
+
+      <h2>10. Accessibility</h2>
+      <p>
+        We welcome guests with disabilities and will make every reasonable effort to accommodate physical, medical or sensory needs. Venues vary, and some have steps or limited mobility access we cannot change. Please tell us about access needs at booking so we can pre-check the venues on your itinerary and recommend the best tour. See also our <a href="/legal/accessibility/">accessibility statement</a>.
+      </p>
+
+      <h2>11. Pickups and meeting points</h2>
+      <p>
+        Public tours depart from a fixed meeting point listed on the tour page. Please arrive 10 minutes before departure — late arrivals may not be accommodated, and no refund is owed for missed departures. Private charters pick up from accommodation in central {SITE.address.locality}; the pickup address must be confirmed at least 24 hours before departure.
+      </p>
+
+      <h2>12. Gift vouchers</h2>
+      <p>
+        Gift vouchers are valid for three years from purchase. In the first year, a voucher purchased for a specific tour is valid for that tour and is exempt from any subsequent price increase. In years two and three, the voucher is valid for the dollar value originally paid against any tour we currently run.
+      </p>
+
+      <h2>13. Photography</h2>
+      <p>
+        We may take photographs or video on tours for use on our website and social channels. If you would prefer not to be in any image, please let your guide know at the start of the tour and we will work around it.
+      </p>
+
+      <h2>14. Liability and insurance</h2>
+      <p>
+        Daves Travel Group carries A$20m public liability and professional indemnity insurance. Our liability is limited to the maximum extent permitted by the Australian Consumer Law and equivalent state legislation. We are not responsible for personal items lost or damaged on tour, or for personal injury arising from a guest's failure to follow safety instructions or from intoxication.
+      </p>
+
+      <h2>15. Governing law</h2>
+      <p>
+        These terms are governed by the laws of {SITE.address.region}, Australia. Any dispute will be dealt with in the courts of {SITE.address.region}.
+      </p>
+
+      <h2>16. Changes to these terms</h2>
+      <p>
+        We may update these terms from time to time. The version that applies to your booking is the version published on this page on the date you confirmed your booking.
+      </p>
+
+      <h2>17. Contact</h2>
+      <p>
+        Questions about a booking, a refund or these terms:
+      </p>
+      <p>
+        <strong>{SITE.name}</strong><br />
+        Email: <a href={`mailto:${SITE.email}`}>{SITE.email}</a><br />
+        Phone: <a href={SITE.phoneHref}>{SITE.phone}</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(24px, 3vw, 40px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 60ch;
+    margin-bottom: 18px;
+  }
+  .updated {
+    font-size: 13px;
+    color: var(--color-warm-gray);
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+</style>

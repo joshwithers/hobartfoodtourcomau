@@ -1,0 +1,201 @@
+---
+import { getCollection, render } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import RegionScene from '~/components/RegionScene.astro'
+import RegionCard from '~/components/RegionCard.astro'
+import SectionHead from '~/components/SectionHead.astro'
+import ClosingCTA from '~/components/ClosingCTA.astro'
+import { breadcrumbSchema } from '~/lib/schema'
+import { SITE } from '~/lib/site'
+
+export async function getStaticPaths() {
+  const regions = await getCollection('regions')
+  return regions.map((region) => ({
+    params: { slug: region.id },
+    props: { region },
+  }))
+}
+
+interface Props { region: CollectionEntry<'regions'> }
+const { region } = Astro.props
+const { Content } = await render(region)
+
+const allRegions = await getCollection('regions')
+const others = allRegions.filter((r) => r.id !== region.id).sort((a, b) => a.data.order - b.data.order).slice(0, 3)
+
+const url = `/regions/${region.id}/`
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Other regions', url: '/regions/' },
+  { name: region.data.title, url },
+])
+
+const placeLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Place',
+  name: region.data.title,
+  description: region.data.description,
+  containedInPlace: {
+    '@type': 'AdministrativeArea',
+    name: region.data.state,
+  },
+  url: new URL(url, SITE.url).href,
+}
+---
+
+<Base
+  title={`${region.data.title} tours · ${region.data.tourCount} options`}
+  description={region.data.description}
+  canonical={url}
+  keywords={region.data.keywords}
+  jsonLd={[breadcrumbs, placeLd]}
+>
+  <section class="page-hero">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Regions', href: '/regions/' },
+            { label: region.data.title },
+          ]}
+        />
+        <span class="kicker">{region.data.state} · {region.data.tourCount} tours</span>
+        <h1 class="page-title">{region.data.title}</h1>
+        <p class="page-lede">{region.data.summary}</p>
+        <ul class="meta">
+          <li><span class="meta-label">Departures from</span><span class="meta-value">{region.data.departureCity}</span></li>
+          <li><span class="meta-label">Drinks focus</span><span class="meta-value">{region.data.drinks.join(' · ')}</span></li>
+          <li><span class="meta-label">Tour count</span><span class="meta-value">{region.data.tourCount} tours</span></li>
+        </ul>
+      </div>
+      <div class="hero-art">
+        <RegionScene
+          scene={region.data.sceneKey}
+          swatch={region.data.swatch}
+          label={region.data.title.split(/[,&]/)[0].trim()}
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container body-grid">
+      <div class="prose">
+        <Content />
+      </div>
+      <aside class="highlights-card">
+        <h2>Tours worth coming for</h2>
+        <ul>
+          {region.data.highlights.map((h) => (
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+              <span>{h}</span>
+            </li>
+          ))}
+        </ul>
+        <a href={region.data.bookingUrl ?? '/contact/'} class="btn btn-primary btn-lg">Talk to our {region.data.title.split(/[,&]/)[0].trim()} crew</a>
+      </aside>
+    </div>
+  </section>
+
+  {others.length > 0 && (
+    <section class="section section-paper">
+      <div class="container">
+        <SectionHead
+          kicker="Other regions"
+          title="Doing more than one region on this trip?"
+          description={`A lot of guests pair ${SITE.address.locality} with Sydney or the Hunter. We co-ordinate the booking across the network.`}
+          actionLabel="See all regions"
+          actionHref="/regions/"
+        />
+        <div class="region-grid">
+          {others.map((r) => <RegionCard region={r} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <ClosingCTA />
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(40px, 4vw, 80px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .page-hero .breadcrumbs { margin-bottom: 24px; }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 56ch;
+    margin-bottom: 24px;
+  }
+  .meta {
+    list-style: none;
+    margin: 0;
+    padding: 24px 0 0;
+    border-top: 1px solid var(--color-sand);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px 28px;
+  }
+  .meta li { display: flex; flex-direction: column; gap: 4px; }
+  .meta-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-warm-gray); }
+  .meta-value { font-size: 14px; font-weight: 500; color: var(--color-ink); line-height: 1.3; }
+
+  .hero-art { border: 1px solid var(--color-sand); border-radius: 14px; overflow: hidden; }
+
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+  .body-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 48px;
+    align-items: flex-start;
+  }
+  .highlights-card {
+    background: var(--color-canvas);
+    border: 1px solid var(--color-sand);
+    border-radius: 14px;
+    padding: 24px;
+    position: sticky;
+    top: 100px;
+  }
+  .highlights-card h2 { font-size: 1.1rem; font-weight: 700; color: var(--color-ink); margin-bottom: 14px; }
+  .highlights-card ul { list-style: none; padding: 0; margin: 0 0 18px; display: flex; flex-direction: column; gap: 10px; }
+  .highlights-card li { display: flex; gap: 10px; align-items: flex-start; color: var(--color-charcoal); font-size: 0.95rem; line-height: 1.4; }
+  .highlights-card svg { color: var(--color-accent); flex-shrink: 0; margin-top: 2px; }
+  .highlights-card .btn { width: 100%; }
+
+  .region-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  .section-paper { background: var(--color-off-white); border-block: 1px solid var(--color-sand); }
+
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .body-grid { grid-template-columns: 1fr; }
+    .highlights-card { position: static; }
+  }
+</style>

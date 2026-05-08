@@ -1,0 +1,351 @@
+---
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import { breadcrumbSchema, contactPageSchema } from '~/lib/schema'
+import { SITE, tourLabels } from '~/lib/site'
+
+export const prerender = false
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Contact', url: '/contact/' },
+])
+
+const contactPage = contactPageSchema(
+  '/contact/',
+  `Phone, email and contact form for ${SITE.name}. Bookings, private charters, gift vouchers and dietary questions.`
+)
+
+const params = Astro.url.searchParams
+const tour = params.get('tour') ?? ''
+const about = params.get('about') ?? ''
+const sent = params.get('sent') === '1'
+const error = params.get('error') ?? ''
+
+const TOUR_OPTIONS = SITE.tourOptions
+
+const TOUR_LABELS = tourLabels()
+
+const isPrivate = tour === 'private-charter'
+const aboutLabel = about ? TOUR_LABELS[about] : null
+
+const headline = isPrivate
+  ? 'Quote a private charter.'
+  : tour
+  ? `Enquire about the ${TOUR_LABELS[tour] ?? 'tour'}.`
+  : 'Talk to a human.'
+
+const lede = isPrivate
+  ? aboutLabel
+    ? `You were looking at the ${aboutLabel} — tell us about your group, your date and any preferences, and we'll come back with a custom itinerary and quote.`
+    : "Tell us about your group, your preferred date, and what you'd like to do — the food tour, the pub tour, a meet-the-makers day, or a custom Hobart experience. We'll quote within the same business day."
+  : 'Booking questions usually get answered in under two hours during business days. Private group enquiries we typically reply to within the same business day.'
+
+const errorMessages: Record<string, string> = {
+  missing: 'Please fill in your name, email and a message.',
+  email: 'That email address didn’t look right — try again?',
+  length: 'One of your fields was a bit too long. Trim it down and try again.',
+  config: 'Our form is temporarily down. Please email or phone us and we’ll fix this shortly.',
+  send: 'Something went wrong sending the message. Please email or phone us directly.',
+  invalid: 'We couldn’t read that submission. Please try again.',
+}
+---
+
+<Base
+  title={`Contact ${SITE.name}`}
+  description={`Phone, email and contact form for ${SITE.name}. Bookings, private charters, gift vouchers, agent rates and dietary questions all live here.`}
+  canonical="/contact/"
+  jsonLd={[breadcrumbs, contactPage]}
+>
+  <section class="page-hero">
+    <div class="container container-prose">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Contact' }]} />
+      <span class="kicker">Contact</span>
+      <h1 class="page-title">{headline}</h1>
+      <p class="page-lede">{lede}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container contact-grid-wrap">
+      <div class="contact-form-col">
+        {sent && (
+          <div class="alert alert-success" role="status">
+            <strong>Thanks — we’ve got it.</strong>
+            <span>One of the team will reply shortly. In the meantime, feel free to phone us on <a href={SITE.phoneHref}>{SITE.phone}</a>.</span>
+          </div>
+        )}
+        {error && errorMessages[error] && (
+          <div class="alert alert-error" role="alert">
+            <strong>That didn’t go through.</strong>
+            <span>{errorMessages[error]}</span>
+          </div>
+        )}
+
+        <form method="POST" action="/api/contact/" class="contact-form" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="name">Your name</label>
+              <input id="name" name="name" type="text" required autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="phone">Phone <span class="optional">(optional)</span></label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" />
+            </div>
+            <div class="field">
+              <label for="tour">Which tour?</label>
+              <select id="tour" name="tour">
+                {TOUR_OPTIONS.map((o) => (
+                  <option value={o.value} selected={o.value === tour}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="groupSize">Group size <span class="optional">(if known)</span></label>
+              <input id="groupSize" name="groupSize" type="text" inputmode="numeric" placeholder="e.g. 8" />
+            </div>
+            <div class="field">
+              <label for="preferredDate">Preferred date <span class="optional">(if known)</span></label>
+              <input id="preferredDate" name="preferredDate" type="text" placeholder="e.g. Saturday 14 June 2026" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="message">Tell us about it</label>
+            <textarea id="message" name="message" rows="6" required placeholder="What you're after, any dietaries, kids in the group, and anything else we should know."></textarea>
+          </div>
+
+          {about && <input type="hidden" name="about" value={about} />}
+
+          <input
+            type="text"
+            name="website"
+            tabindex="-1"
+            autocomplete="off"
+            class="hp"
+            aria-hidden="true"
+          />
+
+          <div class="form-foot">
+            <button type="submit" class="btn btn-primary btn-lg">
+              {isPrivate ? 'Send private group enquiry' : 'Send enquiry'}
+            </button>
+            <p class="form-fine">
+              Or phone us on <a href={SITE.phoneHref} class="tnum">{SITE.phone}</a>.
+              We reply to most enquiries the same business day.
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <aside class="contact-aside">
+        <div class="contact-card">
+          <span class="kicker">Phone</span>
+          <a href={SITE.phoneHref} class="contact-value tnum">{SITE.phone}</a>
+          <p>Booking line · 9am to 7pm AEST, seven days.</p>
+        </div>
+        <div class="contact-card">
+          <span class="kicker">Email · Bookings</span>
+          <a href={`mailto:${SITE.email}`} class="contact-value">{SITE.email}</a>
+          <p>For ticket changes, dietaries, gift vouchers and general questions.</p>
+        </div>
+        <div class="contact-card">
+          <span class="kicker">Email · Private groups</span>
+          <a href={`mailto:${SITE.salesEmail}`} class="contact-value">{SITE.salesEmail}</a>
+          <p>For corporate groups, hens, bucks, weddings and travel agents.</p>
+        </div>
+        <div class="contact-card">
+          <span class="kicker">Where we run</span>
+          <span class="contact-value">{SITE.address.street}, {SITE.address.locality} {SITE.address.region} {SITE.address.postcode}</span>
+          <p>The food tour meets at Machine Laundry Cafe in Salamanca Square. Private groups can be picked up from any central {SITE.address.locality} accommodation.</p>
+        </div>
+        <div class="contact-card">
+          <span class="kicker">Reviews</span>
+          <a href={SITE.social.google} class="contact-value" rel="noopener noreferrer">Google · {SITE.shortName}</a>
+          <p>Read what previous guests have said — and leave us one of your own after the tour.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(32px, 3vw, 48px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede { font-size: 1.15rem; color: var(--color-charcoal); line-height: 1.5; max-width: 60ch; }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+
+  .contact-grid-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 48px;
+    align-items: flex-start;
+  }
+  @media (max-width: 920px) {
+    .contact-grid-wrap { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  .alert {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .alert strong { color: var(--color-ink); font-weight: 700; }
+  .alert-success { background: #f0f7ec; border-color: #a8c890; color: #2c4a1a; }
+  .alert-success strong { color: #1f3711; }
+  .alert-error { background: #fdf0e8; border-color: #e8a878; color: #6a2a08; }
+  .alert-error strong { color: #4a1d05; }
+  .alert a { color: inherit; text-decoration: underline; }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-sand);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 540px) {
+    .field-row { grid-template-columns: 1fr; }
+  }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-warm-gray);
+  }
+  .optional {
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-warm-gray);
+    opacity: 0.75;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--color-sand);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 15px;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    transition: border-color 140ms, box-shadow 140ms;
+  }
+  .field textarea { resize: vertical; min-height: 130px; }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--color-accent-strong);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-strong) 22%, transparent);
+  }
+
+  .hp {
+    position: absolute !important;
+    left: -10000px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+  }
+
+  .form-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 8px;
+    padding-top: 18px;
+    border-top: 1px solid var(--color-light-sand);
+  }
+  .form-fine { font-size: 13px; color: var(--color-charcoal); }
+  .form-fine a { color: var(--color-ink); font-weight: 600; }
+
+  .contact-aside {
+    display: grid;
+    gap: 12px;
+  }
+  .contact-card {
+    background: var(--color-canvas);
+    border: 1px solid var(--color-sand);
+    border-radius: 14px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 160ms;
+    min-width: 0;
+  }
+  .contact-card:hover { border-color: var(--color-charcoal); }
+  .contact-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.3;
+  }
+  .contact-card a.contact-value { transition: color 140ms; }
+  .contact-card a.contact-value:hover { color: var(--color-accent-strong); }
+  .contact-card p { font-size: 0.88rem; color: var(--color-charcoal); line-height: 1.4; }
+</style>
+
+<script>
+  // Progressive enhancement: scroll to alert + focus invalid fields
+  document.addEventListener('DOMContentLoaded', () => {
+    const alert = document.querySelector('.alert')
+    if (alert) alert.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+    const form = document.querySelector<HTMLFormElement>('form.contact-form')
+    if (!form) return
+    form.addEventListener('submit', (e) => {
+      const required = form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]')
+      for (const el of required) {
+        if (!el.value.trim()) {
+          e.preventDefault()
+          el.focus()
+          el.style.borderColor = '#c64f1c'
+          return
+        }
+      }
+    })
+  })
+</script>

@@ -1,0 +1,81 @@
+---
+import { SITE } from '~/lib/site'
+
+interface Props {
+  title: string
+  description?: string
+  canonical?: string
+  ogImage?: string
+  ogType?: 'website' | 'article'
+  noindex?: boolean
+  keywords?: string[]
+  publishedTime?: Date
+  modifiedTime?: Date
+}
+
+const {
+  title,
+  description = SITE.description,
+  canonical,
+  ogImage = SITE.defaultOgImage,
+  ogType = 'website',
+  noindex = false,
+  keywords = [],
+  publishedTime,
+  modifiedTime,
+} = Astro.props
+
+function withTrailingSlash(path: string) {
+  if (!path.startsWith('/')) path = `/${path}`
+  const [pathname, ...rest] = path.split(/(?=[?#])/)
+  const normalized = pathname.endsWith('/') ? pathname : `${pathname}/`
+  return [normalized, ...rest].join('')
+}
+
+const canonicalPath = withTrailingSlash(canonical ?? Astro.url.pathname)
+const canonicalURL = new URL(canonicalPath, Astro.site ?? SITE.url)
+const ogImageURL = new URL(ogImage, Astro.site ?? SITE.url)
+const SERP_TITLE_BUDGET = 60
+const branded = `${title} · ${SITE.shortName}`
+const fullTitle =
+  title === SITE.name
+    ? SITE.name
+    : branded.length <= SERP_TITLE_BUDGET
+      ? branded
+      : title
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL.href} />
+{keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta name="theme-color" content="#fffefb" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#201515" media="(prefers-color-scheme: dark)" />
+
+<!-- Open Graph -->
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL.href} />
+<meta property="og:image" content={ogImageURL.href} />
+<meta property="og:locale" content="en_AU" />
+{publishedTime && (
+  <meta property="article:published_time" content={publishedTime.toISOString()} />
+)}
+{modifiedTime && (
+  <meta property="article:modified_time" content={modifiedTime.toISOString()} />
+)}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageURL.href} />
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/favicon.svg" />
+<link rel="mask-icon" href="/favicon.svg" color="#ff4f00" />

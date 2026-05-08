@@ -1,0 +1,62 @@
+---
+interface Props {
+  kicker?: string
+  title: string
+  description?: string
+  actionLabel?: string
+  actionHref?: string
+  align?: 'left' | 'center'
+}
+const { kicker, title, description, actionLabel, actionHref, align = 'left' } = Astro.props
+---
+
+<header class={`section-head section-head-${align}`}>
+  <div class="head-text">
+    {kicker && <span class="kicker">{kicker}</span>}
+    <h2 class="section-title">{title}</h2>
+    {description && <p class="section-description">{description}</p>}
+  </div>
+  {actionHref && actionLabel && (
+    <a href={actionHref} class="btn btn-outline section-action">{actionLabel} →</a>
+  )}
+</header>
+
+<style>
+  .section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+  .section-head-center {
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+  }
+  .head-text { display: flex; flex-direction: column; gap: 12px; max-width: 60ch; }
+  .section-head-center .head-text { align-items: center; }
+
+  .kicker { color: var(--color-warm-gray); }
+
+  .section-title {
+    font-size: clamp(1.8rem, 1.4rem + 2vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.05;
+    color: var(--color-ink);
+    letter-spacing: -0.025em;
+  }
+
+  .section-description {
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--color-charcoal);
+  }
+
+  .section-action { flex-shrink: 0; }
+
+  @media (max-width: 640px) {
+    .section-action { width: 100%; justify-content: center; }
+  }
+</style>

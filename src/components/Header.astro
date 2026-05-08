@@ -1,0 +1,230 @@
+---
+import DavesMark from './DavesMark.astro'
+import { NAV_PRIMARY, SITE } from '~/lib/site'
+
+const rawPath = Astro.url.pathname
+const path = rawPath.endsWith('/') ? rawPath : rawPath + '/'
+---
+
+<header class="site-header">
+  <div class="container nav-bar">
+    <a href="/" class="brand-lockup" aria-label={SITE.shortName}>
+      <DavesMark size={36} />
+      <span class="brand-text">
+        <span class="brand-line">{SITE.brandLine1}</span>
+        <span class="brand-line">{SITE.brandLine2}</span>
+      </span>
+    </a>
+
+    <nav class="nav-primary" aria-label="Primary">
+      {
+        NAV_PRIMARY.map((item) => {
+          const active = path === item.href || path.startsWith(item.href)
+          return (
+            <a
+              href={item.href}
+              class={`nav-link${active ? ' nav-link--active' : ''}`}
+              aria-current={active ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          )
+        })
+      }
+    </nav>
+
+    <div class="nav-actions">
+      <a href={SITE.phoneHref} class="nav-phone tnum" aria-label={`Phone ${SITE.name}`}>
+        {SITE.phone}
+      </a>
+      <a href="/tours/" class="btn btn-primary">Book a tour</a>
+      <button
+        type="button"
+        class="nav-menu-btn"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        id="nav-menu-btn"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile" hidden>
+    <ul>
+      {
+        NAV_PRIMARY.map((item) => {
+          const active = path === item.href || path.startsWith(item.href)
+          return (
+            <li>
+              <a href={item.href} aria-current={active ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          )
+        })
+      }
+      <li>
+        <a href="/tours/" class="btn btn-primary btn-lg" style="width:100%; justify-content:center;">
+          Book a tour
+        </a>
+      </li>
+      <li>
+        <a href={SITE.phoneHref} class="tnum mobile-phone">{SITE.phone}</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: color-mix(in srgb, var(--color-canvas) 92%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-block: 14px;
+    min-height: 72px;
+  }
+  .brand-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    color: var(--color-ink);
+  }
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+  .brand-line {
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .brand-line + .brand-line {
+    color: var(--color-charcoal);
+    font-weight: 600;
+  }
+
+  .nav-primary {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-inline: auto;
+  }
+  .nav-link {
+    position: relative;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-charcoal);
+    border-radius: 6px;
+    transition: color 140ms, background-color 140ms;
+  }
+  .nav-link:hover { color: var(--color-ink); background: var(--color-light-sand); }
+  .nav-link--active { color: var(--color-ink); }
+  .nav-link--active::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 4px;
+    height: 2px;
+    background: var(--color-accent-strong);
+    border-radius: 1px;
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .nav-phone {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-ink);
+    transition: color 140ms;
+  }
+  .nav-phone:hover { color: var(--color-accent-strong); }
+  .nav-menu-btn {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--color-sand);
+    background: var(--color-canvas);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0;
+  }
+  .nav-menu-btn span {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    background: var(--color-ink);
+    border-radius: 2px;
+  }
+
+  .mobile-nav {
+    border-top: 1px solid var(--color-sand);
+    background: var(--color-canvas);
+    padding: 16px 24px 24px;
+  }
+  .mobile-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .mobile-nav a {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    padding: 14px 6px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--color-light-sand);
+  }
+  .mobile-nav a[aria-current="page"] { color: var(--color-accent-strong); font-weight: 600; }
+  .mobile-phone { padding: 16px 6px !important; color: var(--color-charcoal); border-bottom: none !important; }
+
+  @media (max-width: 980px) {
+    .nav-primary { display: none; }
+    .nav-phone { display: none; }
+    .nav-menu-btn { display: inline-flex; }
+  }
+  @media (max-width: 600px) {
+    .brand-text { display: none; }
+  }
+</style>
+
+<script>
+  function initMobileNav() {
+    const btn = document.getElementById('nav-menu-btn') as HTMLButtonElement | null
+    const nav = document.getElementById('mobile-nav') as HTMLElement | null
+    if (!btn || !nav) return
+    btn.addEventListener('click', () => {
+      const isOpen = btn.getAttribute('aria-expanded') === 'true'
+      btn.setAttribute('aria-expanded', String(!isOpen))
+      btn.setAttribute('aria-label', !isOpen ? 'Close menu' : 'Open menu')
+      if (isOpen) nav.setAttribute('hidden', '')
+      else nav.removeAttribute('hidden')
+    })
+  }
+  initMobileNav()
+</script>

@@ -1,0 +1,49 @@
+---
+import Base from '~/layouts/Base.astro'
+import { SITE } from '~/lib/site'
+---
+
+<Base
+  title="Page not found"
+  description={`The page you were looking for has rolled off into the gutter. Browse the ${SITE.address.locality} tour list, dip into the field journal, or head back to the homepage.`}
+  noindex
+>
+  <section class="not-found">
+    <div class="container">
+      <span class="kicker">404 · Page not found</span>
+      <h1>This pour didn&apos;t make it to the bar.</h1>
+      <p>
+        The page you were looking for has rolled off into the gutter. Try one of these instead:
+      </p>
+      <div class="actions">
+        <a href="/tours/" class="btn btn-primary btn-lg">{`Browse all ${SITE.address.locality} tours`}</a>
+        <a href="/journal/" class="btn btn-outline btn-lg">Read the journal</a>
+        <a href="/" class="btn btn-outline btn-lg">Back to home</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .not-found {
+    padding-block: clamp(80px, 10vw, 160px);
+    text-align: center;
+  }
+  .kicker { color: var(--color-warm-gray); display: block; margin-bottom: 12px; }
+  h1 {
+    font-size: clamp(2.4rem, 1.6rem + 4vw, 4.8rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  p {
+    font-size: 1.1rem;
+    color: var(--color-charcoal);
+    max-width: 50ch;
+    margin: 0 auto 28px;
+    line-height: 1.5;
+  }
+  .actions { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+</style>

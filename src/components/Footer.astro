@@ -1,0 +1,241 @@
+---
+import DavesMark from './DavesMark.astro'
+import { SITE, NAV_FOOTER } from '~/lib/site'
+
+const year = new Date().getFullYear()
+---
+
+<footer class="surface-dark site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="brand-col">
+        <a href="/" class="brand-lockup">
+          <DavesMark size={42} />
+          <span class="brand-text">
+            <span class="brand-line-strong">{SITE.name}</span>
+            <span class="brand-line-soft">A Daves company · est. {SITE.established}</span>
+          </span>
+        </a>
+        <p class="footer-pitch">
+          A small-group walking food tour of Hobart by Daves —
+          Tasmanian seafood, scallop pies, chocolate, oysters and ice cream
+          across Salamanca and the waterfront. We take care of the details.
+          You bring your appetite.
+        </p>
+        <ul class="social-row" aria-label="Social media">
+          <li>
+            <a href={SITE.social.instagram} rel="noopener noreferrer">
+              <span aria-hidden="true">IG</span>
+              <span class="sr-only">Instagram</span>
+            </a>
+          </li>
+          <li>
+            <a href={SITE.social.facebook} rel="noopener noreferrer">
+              <span aria-hidden="true">FB</span>
+              <span class="sr-only">Facebook</span>
+            </a>
+          </li>
+          <li>
+            <a href={SITE.social.youtube} rel="noopener noreferrer">
+              <span aria-hidden="true">YT</span>
+              <span class="sr-only">YouTube</span>
+            </a>
+          </li>
+          <li>
+            <a href={SITE.social.tripadvisor} rel="noopener noreferrer">
+              <span aria-hidden="true">TA</span>
+              <span class="sr-only">TripAdvisor</span>
+            </a>
+          </li>
+          <li>
+            <a href={SITE.social.google} rel="noopener noreferrer" aria-label="Google reviews">
+              <span aria-hidden="true">G</span>
+              <span class="sr-only">Google reviews</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {
+        Object.entries(NAV_FOOTER).map(([title, links]) => (
+          <div class="footer-col">
+            <h3 class="footer-title">{title}</h3>
+            <ul>
+              {links.map((l) => (
+                <li>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="footer-contact">
+      <div>
+        <span class="contact-label">Phone</span>
+        <a href={SITE.phoneHref} class="contact-value tnum">{SITE.phone}</a>
+      </div>
+      <div>
+        <span class="contact-label">Email</span>
+        <a href={`mailto:${SITE.email}`} class="contact-value">{SITE.email}</a>
+      </div>
+      <div>
+        <span class="contact-label">Based in</span>
+        <span class="contact-value">{SITE.address.street}, {SITE.address.locality} {SITE.address.region} {SITE.address.postcode}</span>
+      </div>
+      <a href="/tours/" class="btn btn-primary">Talk to a human</a>
+    </div>
+
+    <div class="footer-fine">
+      <span>© {year} {SITE.name} · ABN {SITE.abn}</span>
+      <span class="fine-links">
+        <a href="/legal/privacy/">Privacy</a>
+        <a href="/legal/terms/">Terms</a>
+        <a href="/legal/accessibility/">Accessibility</a>
+      </span>
+    </div>
+
+    <p class="footer-credit">
+      Another <a href="https://unpopular.au" rel="noopener noreferrer external">Unpopular</a>
+      website on
+      <a href="https://theinternet.com.au" rel="noopener noreferrer external">The Internet</a>
+      by <a href="https://joshwithers.au" rel="noopener noreferrer external">Josh</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 96px;
+    padding-block: 64px 32px;
+    background: var(--color-ink);
+    color: var(--color-canvas);
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 40px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(255, 254, 251, 0.12);
+  }
+
+  .brand-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-canvas);
+    margin-bottom: 16px;
+  }
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+  }
+  .brand-line-strong { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+  .brand-line-soft { font-size: 12px; color: rgba(255, 254, 251, 0.6); margin-top: 4px; }
+
+  .footer-pitch {
+    color: rgba(255, 254, 251, 0.78);
+    font-size: 14px;
+    max-width: 38ch;
+    line-height: 1.55;
+  }
+
+  .social-row {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin-top: 18px;
+    padding: 0;
+  }
+  .social-row a {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 254, 251, 0.2);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-canvas);
+    transition: background-color 140ms, border-color 140ms;
+  }
+  .social-row a:hover { background: rgba(255, 254, 251, 0.08); border-color: var(--color-accent); color: var(--color-accent); }
+
+  .footer-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 254, 251, 0.55);
+    margin: 0 0 18px;
+  }
+  .footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a {
+    font-size: 14px;
+    color: rgba(255, 254, 251, 0.85);
+    transition: color 140ms;
+  }
+  .footer-col a:hover { color: var(--color-accent); }
+
+  .footer-contact {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px 40px;
+    padding-block: 36px;
+    border-bottom: 1px solid rgba(255, 254, 251, 0.12);
+  }
+  .footer-contact > div { display: flex; flex-direction: column; gap: 4px; }
+  .contact-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 254, 251, 0.5); }
+  .contact-value { font-size: 14px; color: var(--color-canvas); font-weight: 500; }
+  .footer-contact .btn { margin-left: auto; }
+
+  .footer-fine {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    color: rgba(255, 254, 251, 0.55);
+    font-size: 12px;
+  }
+  .fine-links { display: flex; gap: 18px; }
+  .fine-links a { color: rgba(255, 254, 251, 0.7); }
+  .fine-links a:hover { color: var(--color-accent); }
+
+  .footer-credit {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 254, 251, 0.08);
+    font-size: 12px;
+    color: rgba(255, 254, 251, 0.62);
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+  .footer-credit a {
+    color: rgba(255, 254, 251, 0.82);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 254, 251, 0.15);
+    text-underline-offset: 3px;
+    transition: color 140ms, text-decoration-color 140ms;
+  }
+  .footer-credit a:hover {
+    color: var(--color-accent);
+    text-decoration-color: var(--color-accent);
+  }
+
+  @media (max-width: 900px) {
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    .brand-col { grid-column: 1 / -1; }
+  }
+  @media (max-width: 540px) {
+    .footer-top { grid-template-columns: 1fr; gap: 32px; }
+    .footer-contact .btn { margin-left: 0; }
+  }
+</style>

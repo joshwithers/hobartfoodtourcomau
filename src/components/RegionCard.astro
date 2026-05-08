@@ -1,0 +1,65 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import RegionScene from './RegionScene.astro'
+
+interface Props {
+  region: CollectionEntry<'regions'>
+}
+
+const { region } = Astro.props
+const href = `/regions/${region.id}/`
+---
+
+<article class="region-card card-link">
+  <a href={href} class="card lift">
+    <RegionScene
+      scene={region.data.sceneKey}
+      swatch={region.data.swatch}
+      label={region.data.title.split(/[,&]/)[0].trim()}
+    />
+    <div class="region-body">
+      <span class="kicker">{region.data.state}</span>
+      <h3 class="region-title">{region.data.title}</h3>
+      <p class="region-summary">{region.data.summary}</p>
+      <div class="region-foot">
+        <span class="pill">{region.data.tourCount} tours</span>
+        <span class="region-cta">View {region.data.title.split(/[,&]/)[0].trim()} →</span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .region-card .card { display: flex; flex-direction: column; height: 100%; }
+  .region-card a { color: inherit; display: block; height: 100%; }
+
+  .region-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .region-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+  }
+  .region-summary {
+    color: var(--color-charcoal);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .region-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-light-sand);
+  }
+  .region-cta { font-size: 0.85rem; font-weight: 600; color: var(--color-accent-strong); }
+</style>

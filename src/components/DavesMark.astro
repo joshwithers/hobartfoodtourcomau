@@ -1,0 +1,18 @@
+---
+import Logo from '~/assets/daves.svg'
+
+interface Props {
+  size?: number
+  class?: string
+}
+
+const { size = 36, class: className } = Astro.props
+---
+
+<Logo
+  width={size}
+  height={size}
+  class={className}
+  aria-hidden="true"
+  focusable="false"
+/>

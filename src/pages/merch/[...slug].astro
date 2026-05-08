@@ -1,0 +1,234 @@
+---
+import { getCollection, render } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import MerchGallery from '~/components/MerchGallery.astro'
+import MerchCard from '~/components/MerchCard.astro'
+import SectionHead from '~/components/SectionHead.astro'
+import { breadcrumbSchema, fareharborMerchUrl, merchSchema } from '~/lib/schema'
+import { formatPrice, SITE } from '~/lib/site'
+
+export async function getStaticPaths() {
+  const items = await getCollection('merch')
+  return items.map((item) => ({
+    params: { slug: item.id },
+    props: { item },
+  }))
+}
+
+interface Props { item: CollectionEntry<'merch'> }
+const { item } = Astro.props
+const { Content } = await render(item)
+
+const allItems = await getCollection('merch')
+const others = allItems
+  .filter((i) => i.id !== item.id)
+  .sort((a, b) => a.data.order - b.data.order)
+
+const url = `/merch/${item.id}/`
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Merch', url: '/merch/' },
+  { name: item.data.title, url },
+])
+const productLd = merchSchema(item, url)
+---
+
+<Base
+  title={item.data.title}
+  description={item.data.description}
+  canonical={url}
+  keywords={item.data.keywords}
+  ogImage={item.data.ogImage ?? item.data.heroImage}
+  publishedTime={item.data.publishDate}
+  modifiedTime={item.data.updatedDate ?? item.data.publishDate}
+  jsonLd={[breadcrumbs, productLd]}
+>
+  <article>
+    <section class="merch-hero">
+      <div class="container">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Merch', href: '/merch/' },
+            { label: item.data.title },
+          ]}
+        />
+
+        <div class="hero-grid">
+          <div class="gallery-col">
+            <MerchGallery
+              hero={{ src: item.data.heroImage, alt: item.data.heroImageAlt }}
+              gallery={item.data.gallery}
+            />
+          </div>
+
+          <div class="buy-col">
+            {item.data.badge && <span class="pill pill-accent">{item.data.badge}</span>}
+            <h1 class="hero-title">{item.data.title}</h1>
+            <p class="hero-summary">{item.data.summary}</p>
+
+            <div class="price-block">
+              <span class="price-amount tnum">{formatPrice(item.data.price, item.data.currency)}</span>
+              <span class="price-meta">incl. GST · shipping at checkout</span>
+            </div>
+
+            {item.data.sizes.length > 0 && (
+              <div class="sizes-block">
+                <span class="block-label">Available sizes</span>
+                <ul class="sizes-row">
+                  {item.data.sizes.map((s) => <li>{s}</li>)}
+                </ul>
+                <p class="sizes-note">Pick your size in the FareHarbor checkout.</p>
+              </div>
+            )}
+
+            {item.data.inStock ? (
+              <a
+                href={fareharborMerchUrl(item.data.fareharborItem, item.data.fareharborFlow)}
+                class="btn btn-primary btn-lg buy-btn"
+                target="_blank"
+                rel="noopener"
+              >
+                Buy now · {formatPrice(item.data.price, item.data.currency)}
+              </a>
+            ) : (
+              <button type="button" class="btn btn-outline btn-lg buy-btn" disabled aria-disabled="true">
+                Sold out
+              </button>
+            )}
+
+            <p class="checkout-fine">
+              Secure checkout via FareHarbor. A$10 flat domestic shipping;
+              international by enquiry. On a tour with us? Your guide can
+              hand it over on the day — mention it at checkout.
+            </p>
+
+            <div class="prose prose-tight">
+              <Content />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {others.length > 0 && (
+      <section class="section section-paper">
+        <div class="container">
+          <SectionHead
+            kicker="More merch"
+            title="The rest of the kit"
+            description="A small range, slowly growing."
+            actionLabel="See all merch"
+            actionHref="/merch/"
+          />
+          <div class="other-merch">
+            {others.map((m) => <MerchCard item={m} />)}
+          </div>
+        </div>
+      </section>
+    )}
+  </article>
+</Base>
+
+<style>
+  .merch-hero {
+    padding-block: clamp(32px, 4vw, 64px) clamp(48px, 4vw, 80px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .merch-hero .breadcrumbs { margin-bottom: 24px; }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+    margin-top: 24px;
+    align-items: start;
+  }
+  .gallery-col { position: sticky; top: 100px; }
+  .buy-col { display: flex; flex-direction: column; gap: 16px; }
+
+  .hero-title {
+    font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    margin: 0;
+  }
+  .hero-summary {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: var(--color-charcoal);
+    max-width: 50ch;
+    margin: 0;
+  }
+
+  .price-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 0;
+    border-block: 1px solid var(--color-sand);
+  }
+  .price-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .price-meta { font-size: 13px; color: var(--color-warm-gray); }
+
+  .sizes-block { display: flex; flex-direction: column; gap: 8px; }
+  .block-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-warm-gray);
+  }
+  .sizes-row {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sizes-row li {
+    padding: 8px 14px;
+    border: 1px solid var(--color-sand);
+    border-radius: 8px;
+    background: var(--color-canvas);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .sizes-note { font-size: 12px; color: var(--color-warm-gray); }
+
+  .buy-btn { width: 100%; }
+  .checkout-fine {
+    font-size: 12px;
+    color: var(--color-warm-gray);
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .prose-tight { margin-top: 16px; padding-top: 24px; border-top: 1px solid var(--color-light-sand); }
+
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+  .section-paper { background: var(--color-off-white); border-block: 1px solid var(--color-sand); }
+  .other-merch {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+  }
+
+  @media (max-width: 880px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+    .gallery-col { position: static; }
+  }
+</style>

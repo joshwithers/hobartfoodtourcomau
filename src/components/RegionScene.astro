@@ -1,0 +1,245 @@
+---
+type SceneKey =
+  | 'sydney'
+  | 'hobart'
+  | 'hunter'
+  | 'melbourne'
+  | 'brisbane'
+  | 'cairns'
+  | 'adelaide'
+  | 'perth'
+  | 'margaret-river'
+  | 'darwin'
+
+interface Props {
+  scene: SceneKey
+  swatch: [string, string, string]
+  label?: string
+}
+const { scene, swatch, label } = Astro.props
+const [a, b, c] = swatch
+---
+
+<div class="region-scene" aria-hidden="true">
+  <svg viewBox="0 0 360 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id={`rsky-${scene}`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color={a} stop-opacity="1" />
+        <stop offset="100%" stop-color={a} stop-opacity="0.55" />
+      </linearGradient>
+    </defs>
+    <rect width="360" height="240" fill={`url(#rsky-${scene})`} />
+
+    {scene === 'sydney' && (
+      <g>
+        {/* harbour */}
+        <rect x="0" y="170" width="360" height="70" fill={b} opacity="0.85" />
+        {/* opera house shells */}
+        <g fill={c}>
+          <path d="M180 130 Q200 90 230 130 Z" />
+          <path d="M200 140 Q220 100 250 140 Z" opacity="0.85" />
+          <path d="M220 150 Q240 110 270 150 Z" opacity="0.7" />
+        </g>
+        {/* harbour bridge */}
+        <g stroke={c} stroke-width="4" fill="none">
+          <path d="M30 150 Q90 95 150 150" />
+          <line x1="30" y1="150" x2="150" y2="150" />
+          {[50, 70, 90, 110, 130].map((x) => (
+            <line x1={x} y1={150 - (1 - Math.abs(x - 90) / 90) * 50} x2={x} y2="150" />
+          ))}
+        </g>
+      </g>
+    )}
+
+    {scene === 'hobart' && (
+      <g>
+        {/* mt wellington */}
+        <polygon points="0,200 100,80 200,200" fill={c} opacity="0.92" />
+        <polygon points="40,200 120,110 200,200" fill={c} />
+        {/* harbour */}
+        <rect x="0" y="190" width="360" height="50" fill={b} opacity="0.85" />
+        {/* dock buildings */}
+        <g fill={b}>
+          <rect x="220" y="160" width="30" height="30" />
+          <rect x="260" y="150" width="40" height="40" />
+          <rect x="310" y="165" width="30" height="25" />
+        </g>
+      </g>
+    )}
+
+    {scene === 'hunter' && (
+      <g>
+        {/* sun */}
+        <circle cx="290" cy="60" r="26" fill={b} opacity="0.7" />
+        {/* rolling vine hills */}
+        <path d="M0 180 Q90 140 180 180 T360 180 L360 240 L0 240 Z" fill={c} opacity="0.92" />
+        <path d="M0 200 Q90 170 180 200 T360 200 L360 240 L0 240 Z" fill={c} />
+        {/* vine rows */}
+        {[...Array(5)].map((_, r) => (
+          <g>
+            {[...Array(8)].map((__, i) => (
+              <circle cx={20 + i * 45} cy={185 + r * 10} r="2.5" fill={b} opacity="0.6" />
+            ))}
+          </g>
+        ))}
+      </g>
+    )}
+
+    {scene === 'melbourne' && (
+      <g>
+        {/* skyline */}
+        <g fill={c}>
+          <rect x="40" y="100" width="35" height="100" />
+          <rect x="80" y="80" width="40" height="120" />
+          <rect x="125" y="110" width="30" height="90" />
+          <rect x="160" y="65" width="50" height="135" />
+          <rect x="215" y="95" width="35" height="105" />
+          <rect x="255" y="120" width="45" height="80" />
+          <rect x="305" y="100" width="30" height="100" />
+        </g>
+        {/* tram wires */}
+        <line x1="0" y1="195" x2="360" y2="195" stroke={b} stroke-width="1" opacity="0.6" />
+        <line x1="0" y1="205" x2="360" y2="205" stroke={b} stroke-width="1" opacity="0.6" />
+        {/* tram */}
+        <rect x="120" y="200" width="80" height="22" rx="3" fill={a} opacity="0.95" />
+      </g>
+    )}
+
+    {scene === 'brisbane' && (
+      <g>
+        {/* river bend */}
+        <path d="M-20 180 Q90 220 180 175 T380 200 L380 240 L-20 240 Z" fill={b} opacity="0.85" />
+        {/* skyline */}
+        <g fill={c}>
+          <rect x="60" y="110" width="30" height="80" />
+          <rect x="100" y="90" width="35" height="100" />
+          <rect x="145" y="120" width="25" height="70" />
+          <rect x="180" y="100" width="40" height="90" />
+          <rect x="230" y="115" width="28" height="75" />
+        </g>
+        {/* sun */}
+        <circle cx="300" cy="70" r="24" fill={b} opacity="0.7" />
+      </g>
+    )}
+
+    {scene === 'cairns' && (
+      <g>
+        {/* sun */}
+        <circle cx="300" cy="60" r="34" fill={b} opacity="0.85" />
+        {/* palms */}
+        {[60, 200, 300].map((x) => (
+          <g>
+            <rect x={x - 2} y="120" width="4" height="80" fill={c} />
+            <g stroke={c} stroke-width="3" fill="none">
+              <path d={`M${x} 120 Q${x - 30} 90 ${x - 50} 100`} />
+              <path d={`M${x} 120 Q${x + 30} 90 ${x + 50} 100`} />
+              <path d={`M${x} 120 Q${x - 25} 75 ${x - 45} 60`} />
+              <path d={`M${x} 120 Q${x + 25} 75 ${x + 45} 60`} />
+            </g>
+          </g>
+        ))}
+        {/* sand */}
+        <rect x="0" y="195" width="360" height="45" fill={c} opacity="0.85" />
+      </g>
+    )}
+
+    {scene === 'adelaide' && (
+      <g>
+        {/* sun */}
+        <circle cx="290" cy="60" r="28" fill={b} opacity="0.7" />
+        {/* hills */}
+        <path d="M0 180 Q90 130 180 170 T360 160 L360 240 L0 240 Z" fill={c} opacity="0.92" />
+        {/* vine rows */}
+        {[...Array(4)].map((_, r) => (
+          <g>
+            {[...Array(9)].map((__, i) => (
+              <rect x={20 + i * 38} y={180 + r * 13} width="18" height="6" fill={b} opacity="0.7" />
+            ))}
+          </g>
+        ))}
+      </g>
+    )}
+
+    {scene === 'perth' && (
+      <g>
+        {/* sun over Indian Ocean */}
+        <circle cx="280" cy="80" r="36" fill={b} opacity="0.85" />
+        {/* ocean */}
+        <rect x="0" y="170" width="360" height="70" fill={b} opacity="0.85" />
+        {/* skyline silhouette */}
+        <g fill={c}>
+          <rect x="120" y="120" width="30" height="60" />
+          <rect x="155" y="100" width="40" height="80" />
+          <rect x="200" y="130" width="25" height="50" />
+          <rect x="230" y="110" width="35" height="70" />
+        </g>
+        {/* swans */}
+        <g fill={a} opacity="0.5">
+          <ellipse cx="60" cy="200" rx="14" ry="3" />
+          <ellipse cx="320" cy="210" rx="12" ry="3" />
+        </g>
+      </g>
+    )}
+
+    {scene === 'margaret-river' && (
+      <g>
+        {/* sky */}
+        <circle cx="300" cy="60" r="30" fill={b} opacity="0.7" />
+        {/* coastal hills */}
+        <path d="M0 170 Q80 130 160 170 T360 150 L360 240 L0 240 Z" fill={c} opacity="0.92" />
+        {/* vines along the slope */}
+        {[...Array(5)].map((_, r) => (
+          <g>
+            {[...Array(8)].map((__, i) => (
+              <circle cx={30 + i * 42} cy={175 + r * 12} r="3" fill={b} opacity="0.7" />
+            ))}
+          </g>
+        ))}
+        {/* ocean strip */}
+        <rect x="0" y="160" width="360" height="14" fill={b} opacity="0.4" />
+      </g>
+    )}
+
+    {scene === 'darwin' && (
+      <g>
+        {/* tropical sky/sun */}
+        <circle cx="280" cy="60" r="40" fill={b} opacity="0.85" />
+        {/* mangroves silhouette */}
+        <g fill={c} opacity="0.92">
+          <ellipse cx="80" cy="170" rx="35" ry="20" />
+          <ellipse cx="160" cy="180" rx="30" ry="18" />
+          <ellipse cx="240" cy="175" rx="32" ry="20" />
+          <ellipse cx="320" cy="185" rx="28" ry="16" />
+        </g>
+        {/* water */}
+        <rect x="0" y="200" width="360" height="40" fill={b} opacity="0.7" />
+        {/* boat */}
+        <g fill={a} opacity="0.7">
+          <ellipse cx="180" cy="216" rx="20" ry="3" />
+          <rect x="178" y="208" width="4" height="10" />
+        </g>
+      </g>
+    )}
+
+    {label && (
+      <g>
+        <rect x="18" y="200" width="140" height="26" rx="3" fill="rgba(255,254,251,0.92)" />
+        <text x="88" y="217" text-anchor="middle" font-family="var(--font-display)" font-weight="700" font-size="11" fill="#201515" letter-spacing="2">
+          {label.toUpperCase()}
+        </text>
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .region-scene {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--color-light-sand);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .region-scene svg { width: 100%; height: 100%; display: block; }
+</style>

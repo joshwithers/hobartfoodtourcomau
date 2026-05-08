@@ -1,0 +1,37 @@
+{
+  "name": "Daves Tours · API",
+  "description": "Public API surface for this Daves region site. Used by the website's contact form and exposed for agents that want to submit a tour enquiry programmatically.",
+  "documentation": "/contact/",
+  "apis": [
+    {
+      "name": "Contact / enquiry",
+      "description": "Submits a tour enquiry. Sends an email to the bookings team via Resend. Forwards the user back to /contact/ with a sent or error query parameter.",
+      "humanURL": "/contact/",
+      "endpoints": [
+        {
+          "path": "/api/contact/",
+          "method": "POST",
+          "contentTypes": [
+            "application/x-www-form-urlencoded",
+            "multipart/form-data",
+            "application/json"
+          ],
+          "fields": {
+            "name": { "required": true, "maxLength": 200 },
+            "email": { "required": true, "maxLength": 200, "format": "email" },
+            "phone": { "required": false },
+            "tour": { "required": false, "description": "Slug of the tour the enquirer is interested in." },
+            "about": { "required": false, "description": "Slug of a related tour, used for private-charter enquiries." },
+            "groupSize": { "required": false },
+            "preferredDate": { "required": false },
+            "message": { "required": true, "maxLength": 5000 },
+            "website": { "required": false, "description": "Honeypot field — must be empty." }
+          },
+          "responses": {
+            "303": "Redirects to /contact/ with ?sent=1 on success or ?error=<code> on validation failure."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '~/layouts/Base.astro'
+import Breadcrumbs from '~/components/Breadcrumbs.astro'
+import RegionCard from '~/components/RegionCard.astro'
+import ClosingCTA from '~/components/ClosingCTA.astro'
+import { breadcrumbSchema } from '~/lib/schema'
+import { SITE } from '~/lib/site'
+
+const regions = (await getCollection('regions')).sort((a, b) => a.data.order - b.data.order)
+const totalTours = regions.reduce((sum, r) => sum + r.data.tourCount, 0)
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Other regions', url: '/regions/' },
+])
+---
+
+<Base
+  title="Other Daves cities · sister tours from our network"
+  description="Sydney pub crawls and food tours, plus Daves walks across the east coast. Same network, same booking-fee policy, same small-group format."
+  keywords={['Daves tours', 'Sydney food tour', 'Australian walking tours', 'Daves Travel Group']}
+  jsonLd={[breadcrumbs]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Other regions' }]} />
+      <span class="kicker">{regions.length} sister cities · {totalTours} tours · one network</span>
+      <h1 class="page-title">
+        {`Doing more than ${SITE.address.locality}?`}<br /><span class="editorial">Sister Daves tours run other cities, same way.</span>
+      </h1>
+      <p class="page-lede">
+        Daves is a single team across the country. Same booking, same booking-fee policy (zero), same small-group walking format. The guides are local — never flown in.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="all-regions-heading">
+    <div class="container">
+      <h2 id="all-regions-heading" class="sr-only">Other regions we run</h2>
+      <div class="region-grid">
+        {regions.map((r) => <RegionCard region={r} />)}
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA
+    title="Pairing two cities on the same trip?"
+    description={`A lot of guests pair ${SITE.address.locality} with Sydney or Melbourne. We can co-ordinate the full booking and bundle the small-group rate across both.`}
+    primaryLabel="Email us"
+    primaryHref="/contact/"
+    secondaryLabel={`The ${SITE.address.locality} food tour`}
+    secondaryHref="/tours/hobart-food-tour/"
+  />
+</Base>
+
+<style>
+  .page-hero {
+    padding-block: clamp(48px, 4vw + 32px, 96px) clamp(32px, 3vw, 48px);
+    background: var(--color-off-white);
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .page-hero .kicker { display: block; margin-block: 16px 12px; }
+  .page-title {
+    font-size: clamp(2.4rem, 1.6rem + 3.6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .page-lede {
+    font-size: 1.15rem;
+    color: var(--color-charcoal);
+    line-height: 1.5;
+    max-width: 62ch;
+  }
+  .section { padding-block: clamp(48px, 5vw, 80px); }
+  .region-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+</style>

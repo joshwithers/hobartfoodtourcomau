@@ -1,0 +1,107 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { formatPrice } from '~/lib/site'
+
+interface Props {
+  item: CollectionEntry<'merch'>
+}
+
+const { item } = Astro.props
+const href = `/merch/${item.id}/`
+---
+
+<article class="merch-card card-link">
+  <a href={href} class="card lift">
+    <figure class="merch-art">
+      <img
+        src={item.data.heroImage}
+        alt={item.data.heroImageAlt}
+        loading="lazy"
+        decoding="async"
+      />
+      {item.data.badge && <span class="card-badge">{item.data.badge}</span>}
+      {!item.data.inStock && <span class="card-soldout">Sold out</span>}
+    </figure>
+
+    <div class="card-body">
+      <h3 class="merch-title">{item.data.title}</h3>
+      <p class="merch-summary">{item.data.summary}</p>
+
+      <div class="card-foot">
+        <span class="price-amount tnum">{formatPrice(item.data.price, item.data.currency)}</span>
+        <span class="card-cta">View →</span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .merch-card .card { display: flex; flex-direction: column; height: 100%; }
+  .merch-card a { color: inherit; display: block; height: 100%; }
+
+  .merch-art {
+    margin: 0;
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: var(--color-ink);
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-sand);
+  }
+  .merch-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 600ms cubic-bezier(.2,.7,.2,1);
+  }
+  .merch-card .card:hover .merch-art img { transform: scale(1.04); }
+
+  .card-badge,
+  .card-soldout {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--color-canvas);
+  }
+  .card-badge { background: var(--color-accent-strong); }
+  .card-soldout { background: var(--color-charcoal); }
+
+  .card-body {
+    padding: 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+  .merch-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-ink);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .merch-summary {
+    color: var(--color-charcoal);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-light-sand);
+  }
+  .price-amount { font-size: 1.15rem; font-weight: 700; color: var(--color-ink); letter-spacing: -0.02em; }
+  .card-cta { font-size: 0.85rem; font-weight: 600; color: var(--color-accent-strong); }
+</style>
