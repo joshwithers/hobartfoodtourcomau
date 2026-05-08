@@ -172,6 +172,7 @@ const slides: Image[] = [hero, ...gallery].filter((img) => {
     gap: 8px;
     overflow-x: auto;
     scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
   }
   .gallery-thumb {
     width: 64px;
@@ -193,6 +194,16 @@ const slides: Image[] = [hero, ...gallery].filter((img) => {
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+
+  /* On phones the swipe gesture is the primary nav; shrink the floating arrow
+   * buttons and pull them closer to the edges so they don't crowd the image. */
+  @media (max-width: 540px) {
+    .gallery-arrow { width: 36px; height: 36px; }
+    .gallery-prev { left: 8px; }
+    .gallery-next { right: 8px; }
+    .gallery-counter { bottom: 8px; right: 8px; padding: 3px 8px; font-size: 11px; }
+    .gallery-thumb { width: 56px; height: 70px; }
   }
 </style>
 

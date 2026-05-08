@@ -36,8 +36,9 @@ const href = `/merch/${item.id}/`
 </article>
 
 <style>
-  .merch-card .card { display: flex; flex-direction: column; height: 100%; }
-  .merch-card a { color: inherit; display: block; height: 100%; }
+  .merch-card { min-width: 0; }
+  .merch-card .card { display: flex; flex-direction: column; height: 100%; min-width: 0; }
+  .merch-card a { color: inherit; display: block; height: 100%; min-width: 0; }
 
   .merch-art {
     margin: 0;
