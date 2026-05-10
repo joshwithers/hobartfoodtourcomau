@@ -84,7 +84,7 @@ keywords: [Hobart food tour, Salamanca food tour, Tasmania food tour, Hobart wal
 swatch: ["#c64f1c", "#e6c79a", "#2c2118"]
 sceneKey: crowd
 
-heroImage: /tourimages/food.jpg
+heroImage: /tourimages/food.webp
 heroImageAlt: "Oysters on Hobart food tour"
 
 publishDate: 2026-01-15

@@ -37,6 +37,7 @@ const {
   organizationLd,
 } = Astro.props
 
+const isHome = Astro.url.pathname === '/' || Astro.url.pathname === ''
 const orgLd = organizationLd ?? (organizationSchema as Record<string, unknown>)
 const baseLd: Record<string, unknown>[] = [orgLd, websiteSchema]
 const allLd = jsonLd
@@ -56,6 +57,17 @@ const allLd = jsonLd
     <Font cssVariable="--font-inter" preload />
     <Font cssVariable="--font-fraunces" preload />
 
+    {isHome && (
+      <link
+        rel="preload"
+        as="image"
+        href="/hobart-hero-640.webp"
+        imagesrcset="/hobart-hero-480.webp 480w, /hobart-hero-640.webp 640w, /hobart-hero-960.webp 960w, /hobart-hero-1280.webp 1280w, /hobart-hero.webp 1600w"
+        imagesizes="(max-width: 540px) 100vw, (max-width: 980px) 100vw, 55vw"
+        fetchpriority="high"
+      />
+    )}
+
     <SEO
       title={title}
       description={description}
@@ -73,11 +85,25 @@ const allLd = jsonLd
     {SITE.gaId && (
       <>
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
-        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaId}`}></script>
+        <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
         <script is:inline set:html={`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
+window.gtag = gtag;
 gtag('js', new Date());
-gtag('config', '${SITE.gaId}');`}></script>
+gtag('config', '${SITE.gaId}');
+var loaded = false;
+function loadGA(){
+  if (loaded) return; loaded = true;
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=${SITE.gaId}';
+  document.head.appendChild(s);
+}
+var opts = { once: true, passive: true, capture: true };
+['pointerdown','keydown','scroll','touchstart'].forEach(function(e){
+  addEventListener(e, loadGA, opts);
+});
+setTimeout(loadGA, 8000);`}></script>
       </>
     )}
   </head>

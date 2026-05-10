@@ -19,7 +19,7 @@ meetingAddress: "Salamanca Pl, Hobart TAS 7000"
 groupSize: Up to 11 guests
 minimumAge: 14
 
-heroImage: /tourimages/makers.jpg
+heroImage: /tourimages/makers.webp
 heroImageAlt: "Whisky on Hobart guided meet the makers walking tour"
 
 categories: [food, distillery]

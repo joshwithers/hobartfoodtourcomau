@@ -72,7 +72,7 @@ keywords: [Hobart hens party tour, Tasmania hens weekend, Hobart hens ideas, Coa
 
 swatch: ["#5e1f3a", "#f4d96b", "#e6c79a"]
 sceneKey: lake
-heroImage: /tourimages/hens.jpg
+heroImage: /tourimages/hens.webp
 heroImageAlt: "A bus full of party hens — bride hen with veil and sash, friends with party hats, sunglasses and champagne flutes — on the road to the Coal Valley vineyards"
 
 publishDate: 2026-03-01

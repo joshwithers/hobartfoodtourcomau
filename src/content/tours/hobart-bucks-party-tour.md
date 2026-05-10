@@ -6,7 +6,7 @@ badge: Private
 featured: false
 order: 5
 
-heroImage: /tourimages/beer.jpg
+heroImage: /tourimages/beer.webp
 heroImageAlt: "Pouring beer on Hobart liquid history tour"
 
 price: 380

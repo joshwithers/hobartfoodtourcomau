@@ -6,7 +6,7 @@ badge: Coming soon
 featured: false
 order: 4
 
-heroImage: /tourimages/wine.jpg
+heroImage: /tourimages/wine.webp
 heroImageAlt: "Wine on Hobart guided meet the Hobart tour"
 
 price: 165

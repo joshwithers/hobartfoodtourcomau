@@ -6,7 +6,7 @@ badge: See Hobart's oldest pub
 featured: true
 order: 2
 
-heroImage: /tourimages/beer3.jpg
+heroImage: /tourimages/beer3.webp
 heroImageAlt: "Beer on Hobart history walking tour"
 
 bookingProvider: fareharbor
