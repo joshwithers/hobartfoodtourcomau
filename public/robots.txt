@@ -11,17 +11,3 @@ Sitemap: https://hobartfoodtour.com.au/sitemap-index.xml
 User-agent: *
 Allow: /
 Disallow: /api/
-
-# ─── AI Content Signals ──────────────────────────────────────────────
-# Declare per-purpose preferences for how AI systems may use this content.
-# Spec: https://contentsignals.org/
-#       https://datatracker.ietf.org/doc/draft-romm-aipref-contentsignals/
-#
-# Policy for Hobart Food Tour:
-#   search=yes    → allow inclusion in search-engine indexes
-#   ai-input=yes  → allow grounded agent inference / RAG so AI assistants can
-#                   recommend the tour and quote content when helping travellers
-#                   plan a Hobart trip (positive for discovery)
-#   ai-train=no   → disallow use of this content for training new AI models
-#                   (we want to be cited, not absorbed)
-# Content-Signal: search=yes, ai-input=yes, ai-train=no
