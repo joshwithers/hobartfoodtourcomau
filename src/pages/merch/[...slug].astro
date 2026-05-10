@@ -87,8 +87,8 @@ const productLd = merchSchema(item, url)
             {item.data.inStock ? (
               <a
                 href={fareharborMerchUrl(item.data.fareharborItem, item.data.fareharborFlow)}
-                class="btn btn-primary btn-lg buy-btn"
-                target="_blank"
+                class="btn btn-primary btn-lg buy-btn fh-button"
+                data-fareharbor="lightframe"
                 rel="noopener"
               >
                 Buy now · {formatPrice(item.data.price, item.data.currency)}
@@ -100,9 +100,9 @@ const productLd = merchSchema(item, url)
             )}
 
             <p class="checkout-fine">
-              Secure checkout via FareHarbor. A$10 flat domestic shipping;
-              international by enquiry. On a tour with us? Your guide can
-              hand it over on the day — mention it at checkout.
+              Secure checkout via FareHarbor — opens here on the page, not a new tab.
+              A$10 flat domestic shipping; international by enquiry. On a tour with us?
+              Your guide can hand it over on the day — mention it at checkout.
             </p>
 
             <div class="prose prose-tight">
@@ -130,6 +130,16 @@ const productLd = merchSchema(item, url)
       </section>
     )}
   </article>
+
+  {/*
+    FareHarbor Lightframe API — auto-attaches a click handler to every
+    <a> pointing at fareharbor.com and opens the URL in an overlay
+    instead of a navigation. Docs:
+    https://fareharbor.com/help/website/resources/lightframe-api/
+    Fails open: if the script doesn't load, the buy button still works as
+    a regular link to FareHarbor.
+  */}
+  <script is:inline src="https://fareharbor.com/embeds/api/v1/?autolightframe=yes"></script>
 </Base>
 
 <style>

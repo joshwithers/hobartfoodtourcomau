@@ -64,8 +64,8 @@ export const SITE = {
 
   // ── About section venues (SVG art in AboutStrip) ──────────
   aboutVenues: [
-    { name: 'Machine Laundry Cafe', location: 'Salamanca' },
-    { name: 'Victoria Dock', location: 'Hobart Waterfront' },
+    { name: 'Salamanca', location: 'Place' },
+    { name: 'Constitution', location: 'Dock' },
   ],
 
   // ── Awards (AboutStrip) ───────────────────────────────────
