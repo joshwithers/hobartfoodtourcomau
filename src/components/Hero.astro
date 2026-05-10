@@ -13,16 +13,23 @@ const { tourCount, rating, reviewCount } = Astro.props
   <div class="container hero-grid">
     <div class="hero-stage">
       <div class="hero-art">
-        <img
-          src="/hobart-hero-640.webp"
-          srcset="/hobart-hero-480.webp 480w, /hobart-hero-640.webp 640w, /hobart-hero-960.webp 960w, /hobart-hero-1280.webp 1280w, /hobart-hero.webp 1600w"
-          sizes="(max-width: 540px) 100vw, (max-width: 980px) 100vw, 55vw"
-          alt="Illustrated view of Hobart's waterfront with kunanyi/Mt Wellington behind"
-          width="1600"
-          height="900"
-          fetchpriority="high"
-          decoding="async"
-        />
+        <picture>
+          <source
+            type="image/avif"
+            srcset="/hobart-hero-480.avif 480w, /hobart-hero-640.avif 640w, /hobart-hero-960.avif 960w, /hobart-hero-1280.avif 1280w, /hobart-hero-1600.avif 1600w"
+            sizes="(max-width: 980px) 100vw, 55vw"
+          />
+          <img
+            src="/hobart-hero-640.webp"
+            srcset="/hobart-hero-480.webp 480w, /hobart-hero-640.webp 640w, /hobart-hero-960.webp 960w, /hobart-hero-1280.webp 1280w, /hobart-hero-1600.webp 1600w"
+            sizes="(max-width: 980px) 100vw, 55vw"
+            alt="Illustrated view of Hobart's waterfront with kunanyi/Mt Wellington behind"
+            width="1600"
+            height="900"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </picture>
         <span class="hero-stamp">
           <span class="dot dot-pulse"></span>
           {`Small-group walking food tours of ${SITE.address.locality} · since ${SITE.established}`}
