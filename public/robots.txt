@@ -24,4 +24,4 @@ Disallow: /api/
 #                   plan a Hobart trip (positive for discovery)
 #   ai-train=no   → disallow use of this content for training new AI models
 #                   (we want to be cited, not absorbed)
-Content-Signal: search=yes, ai-input=yes, ai-train=no
+# Content-Signal: search=yes, ai-input=yes, ai-train=no
