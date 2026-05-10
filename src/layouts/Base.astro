@@ -21,6 +21,8 @@ interface Props {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[]
   /** Override the default static organization schema (used by pages that have the tours collection loaded and want to emit aggregateRating + hasOfferCatalog) */
   organizationLd?: Record<string, unknown>
+  /** Hide the site Header and Footer for full-bleed pages (e.g., the 404 game takeover) */
+  hideChrome?: boolean
 }
 
 const {
@@ -35,6 +37,7 @@ const {
   modifiedTime,
   jsonLd,
   organizationLd,
+  hideChrome,
 } = Astro.props
 
 const isHome = Astro.url.pathname === '/' || Astro.url.pathname === ''
@@ -55,17 +58,29 @@ const allLd = jsonLd
     <meta name="generator" content={Astro.generator} />
 
     <Font cssVariable="--font-inter" preload />
-    <Font cssVariable="--font-fraunces" preload />
+    <Font cssVariable="--font-fraunces" />
 
     {isHome && (
-      <link
-        rel="preload"
-        as="image"
-        type="image/avif"
-        imagesrcset="/hobart-hero-480.avif 480w, /hobart-hero-640.avif 640w, /hobart-hero-960.avif 960w, /hobart-hero-1280.avif 1280w, /hobart-hero-1600.avif 1600w"
-        imagesizes="(max-width: 980px) 100vw, 55vw"
-        fetchpriority="high"
-      />
+      <>
+        <link
+          rel="preload"
+          as="image"
+          type="image/avif"
+          href="/hobart-hero-480.avif"
+          imagesrcset="/hobart-hero-480.avif 1x, /hobart-hero-640.avif 1.5x"
+          media="(max-width: 540px)"
+          fetchpriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          type="image/avif"
+          imagesrcset="/hobart-hero-640.avif 640w, /hobart-hero-960.avif 960w, /hobart-hero-1280.avif 1280w, /hobart-hero-1600.avif 1600w"
+          imagesizes="(max-width: 980px) 100vw, 47vw"
+          media="(min-width: 541px)"
+          fetchpriority="high"
+        />
+      </>
     )}
 
     <SEO
@@ -109,11 +124,11 @@ setTimeout(loadGA, 8000);`}></script>
   </head>
   <body>
     <a href="#main" class="skip-link">Skip to content</a>
-    <Header />
+    {!hideChrome && <Header />}
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    {!hideChrome && <Footer />}
 
     <style>
       .skip-link {

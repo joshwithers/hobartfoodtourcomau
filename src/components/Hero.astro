@@ -16,13 +16,23 @@ const { tourCount, rating, reviewCount } = Astro.props
         <picture>
           <source
             type="image/avif"
-            srcset="/hobart-hero-480.avif 480w, /hobart-hero-640.avif 640w, /hobart-hero-960.avif 960w, /hobart-hero-1280.avif 1280w, /hobart-hero-1600.avif 1600w"
-            sizes="(max-width: 980px) 100vw, 55vw"
+            media="(max-width: 540px)"
+            srcset="/hobart-hero-480.avif 1x, /hobart-hero-640.avif 1.5x"
+          />
+          <source
+            type="image/avif"
+            srcset="/hobart-hero-640.avif 640w, /hobart-hero-960.avif 960w, /hobart-hero-1280.avif 1280w, /hobart-hero-1600.avif 1600w"
+            sizes="(max-width: 980px) 100vw, 47vw"
+          />
+          <source
+            type="image/webp"
+            media="(max-width: 540px)"
+            srcset="/hobart-hero-480.webp 1x, /hobart-hero-640.webp 1.5x"
           />
           <img
             src="/hobart-hero-640.webp"
-            srcset="/hobart-hero-480.webp 480w, /hobart-hero-640.webp 640w, /hobart-hero-960.webp 960w, /hobart-hero-1280.webp 1280w, /hobart-hero-1600.webp 1600w"
-            sizes="(max-width: 980px) 100vw, 55vw"
+            srcset="/hobart-hero-640.webp 640w, /hobart-hero-960.webp 960w, /hobart-hero-1280.webp 1280w, /hobart-hero-1600.webp 1600w"
+            sizes="(max-width: 980px) 100vw, 47vw"
             alt="Illustrated view of Hobart's waterfront with kunanyi/Mt Wellington behind"
             width="1600"
             height="900"
