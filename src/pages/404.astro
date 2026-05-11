@@ -1,6 +1,5 @@
 ---
 import Base from '~/layouts/Base.astro'
-import DavesMark from '~/components/DavesMark.astro'
 import { SITE } from '~/lib/site'
 ---
 
@@ -8,142 +7,114 @@ import { SITE } from '~/lib/site'
   title="Page not found — play the snake while you're here"
   description={`The page you were looking for has rolled off into the gutter. Play the food snake or head back to ${SITE.shortName}.`}
   noindex
-  hideChrome
 >
-  <div class="snake-stage" id="snake-stage">
-    <div class="snake-topbar">
-      <a href="/" class="snake-brand" aria-label={SITE.shortName}>
-        <DavesMark size={28} />
-      </a>
-      <div class="snake-score" aria-live="polite">
-        <span class="score-label">Score</span>
-        <span class="score-value tnum" id="snake-score">0</span>
-        <span class="score-sep">·</span>
-        <span class="score-label">Best</span>
-        <span class="score-value tnum" id="snake-best">0</span>
-      </div>
-    </div>
-
-    <div class="snake-headline">
-      <span class="kicker">404 · Page not found</span>
-      <h1>This page got eaten.</h1>
-      <p class="sub">Steer the snake. Eat the {SITE.address.locality} pantry. Don&apos;t bite yourself.</p>
-    </div>
-
-    <div class="snake-board-wrap">
-      <canvas
-        id="snake-canvas"
-        class="snake-canvas"
-        aria-label="Snake game board"
-        role="img"
-      ></canvas>
-
-      <div class="snake-overlay" id="snake-overlay" data-state="ready">
-        <div class="overlay-card">
-          <div class="overlay-title" id="overlay-title">Ready to feast?</div>
-          <div class="overlay-sub" id="overlay-sub">Swipe to steer · arrow keys on desktop</div>
-          <button class="btn btn-primary btn-lg" id="overlay-cta" type="button">Start</button>
-          <a href="/" class="overlay-back">or head back to {SITE.shortName} →</a>
+  <section class="snake-section">
+    <div class="container snake-wrap">
+      <div class="snake-intro">
+        <span class="kicker">404 · Page not found</span>
+        <h1>This page got eaten.</h1>
+        <p class="sub">
+          Steer the snake. Eat the {SITE.address.locality} pantry. Don&apos;t bite yourself.
+          Walls wrap — you&apos;ll roll out the other side.
+        </p>
+        <div class="snake-score" aria-live="polite">
+          <span class="score-label">Score</span>
+          <span class="score-value tnum" id="snake-score">0</span>
+          <span class="score-sep">·</span>
+          <span class="score-label">Best</span>
+          <span class="score-value tnum" id="snake-best">0</span>
         </div>
       </div>
-    </div>
 
-    <div class="snake-legend" aria-label="Food values">
-      <span><span class="emoji">🍺</span> 1</span>
-      <span><span class="emoji">🍇</span> 1</span>
-      <span><span class="emoji">🧀</span> 1</span>
-      <span><span class="emoji">🍷</span> 2</span>
-      <span><span class="emoji">🍖</span> 3</span>
-    </div>
+      <div class="snake-board-wrap">
+        <canvas
+          id="snake-canvas"
+          class="snake-canvas"
+          aria-label="Snake game board"
+          role="img"
+        ></canvas>
 
-    <div class="snake-footnote">
-      <a href="/tours/" class="footnote-link">Browse {SITE.address.locality} tours</a>
-      <span class="dot">·</span>
-      <a href="/journal/" class="footnote-link">Field journal</a>
-      <span class="dot">·</span>
-      <a href="/" class="footnote-link">Home</a>
+        <div class="snake-overlay" id="snake-overlay" data-state="ready">
+          <div class="overlay-card">
+            <div class="overlay-title" id="overlay-title">Ready to feast?</div>
+            <div class="overlay-sub" id="overlay-sub">Swipe to steer · arrow keys on desktop</div>
+            <button class="btn btn-primary btn-lg" id="overlay-cta" type="button">Start</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="snake-legend" aria-label="Food values">
+        <span><span class="emoji">🍺</span> 1</span>
+        <span><span class="emoji">🍇</span> 1</span>
+        <span><span class="emoji">🧀</span> 1</span>
+        <span><span class="emoji">🍷</span> 2</span>
+        <span><span class="emoji">🍖</span> 3</span>
+      </div>
+
+      <div class="snake-actions">
+        <a href="/tours/" class="btn btn-outline">{`Browse all ${SITE.address.locality} tours`}</a>
+        <a href="/" class="btn btn-outline">Back to home</a>
+      </div>
     </div>
-  </div>
+  </section>
 </Base>
 
 <style>
-  .snake-stage {
-    min-height: 100dvh;
-    background:
-      radial-gradient(80% 60% at 50% 0%, var(--color-canvas) 0%, var(--color-off-white) 70%, var(--color-light-sand) 100%);
+  .snake-section {
+    padding-block: clamp(40px, 5vw, 72px);
+  }
+  .snake-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 16px clamp(16px, 4vw, 32px) 24px;
-    gap: 16px;
-    overscroll-behavior: none;
+    gap: 20px;
+    text-align: center;
   }
 
-  .snake-topbar {
-    width: 100%;
-    max-width: 560px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
+  .snake-intro { max-width: 56ch; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .snake-intro .kicker {
+    color: var(--color-warm-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 11px;
+    font-weight: 700;
   }
-  .snake-brand {
-    display: inline-flex;
-    align-items: center;
+  .snake-intro h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 1.2rem + 3vw, 3.2rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
     color: var(--color-ink);
-    text-decoration: none;
+    margin: 0;
+    font-weight: 700;
   }
+  .snake-intro .sub {
+    color: var(--color-charcoal);
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.45;
+  }
+
   .snake-score {
     display: inline-flex;
     align-items: baseline;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 6px 14px;
     background: var(--color-canvas);
     border: 1px solid var(--color-sand);
     border-radius: 999px;
     font-size: 13px;
+    margin-top: 4px;
   }
   .score-label {
     color: var(--color-warm-gray);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-size: 10px;
-    font-weight: 600;
-  }
-  .score-value {
-    color: var(--color-ink);
     font-weight: 700;
-    font-size: 14px;
   }
+  .score-value { color: var(--color-ink); font-weight: 700; font-size: 14px; }
   .score-sep { color: var(--color-sand); }
-
-  .snake-headline {
-    text-align: center;
-    max-width: 560px;
-  }
-  .snake-headline .kicker {
-    display: block;
-    color: var(--color-warm-gray);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 11px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .snake-headline h1 {
-    font-family: var(--font-display);
-    font-size: clamp(1.8rem, 1.3rem + 2.5vw, 3rem);
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-    color: var(--color-ink);
-    margin: 0 0 6px;
-    font-weight: 700;
-  }
-  .snake-headline .sub {
-    color: var(--color-charcoal);
-    font-size: 0.95rem;
-    margin: 0;
-  }
 
   .snake-board-wrap {
     position: relative;
@@ -155,7 +126,7 @@ import { SITE } from '~/lib/site'
     display: block;
     width: 100%;
     height: 100%;
-    background: var(--color-canvas);
+    background: var(--color-off-white);
     border: 1px solid var(--color-sand);
     border-radius: 14px;
     box-shadow: 0 24px 60px -40px rgba(32, 21, 21, 0.4);
@@ -175,45 +146,30 @@ import { SITE } from '~/lib/site'
     -webkit-backdrop-filter: blur(6px);
     transition: opacity 180ms ease;
   }
-  .snake-overlay[data-state="playing"] {
-    opacity: 0;
-    pointer-events: none;
-  }
+  .snake-overlay[data-state='playing'] { opacity: 0; pointer-events: none; }
+
   .overlay-card {
     background: var(--color-canvas);
     border: 1px solid var(--color-sand);
     border-radius: 12px;
-    padding: 22px 24px;
+    padding: 20px 22px;
     text-align: center;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    min-width: 240px;
-    max-width: 320px;
+    min-width: 220px;
+    max-width: 300px;
     box-shadow: 0 18px 48px -24px rgba(32, 21, 21, 0.5);
   }
   .overlay-title {
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--color-ink);
     line-height: 1.05;
     letter-spacing: -0.02em;
   }
-  .overlay-sub {
-    color: var(--color-warm-gray);
-    font-size: 0.85rem;
-  }
-  .overlay-card .btn {
-    margin-top: 4px;
-  }
-  .overlay-back {
-    color: var(--color-warm-gray);
-    font-size: 0.8rem;
-    text-decoration: none;
-    margin-top: 4px;
-  }
-  .overlay-back:hover { color: var(--color-accent-strong); }
+  .overlay-sub { color: var(--color-warm-gray); font-size: 0.85rem; }
 
   .snake-legend {
     display: inline-flex;
@@ -224,35 +180,14 @@ import { SITE } from '~/lib/site'
     font-size: 13px;
     font-weight: 600;
   }
-  .snake-legend .emoji {
-    font-size: 16px;
-    margin-right: 2px;
-    vertical-align: -2px;
-  }
+  .snake-legend .emoji { font-size: 16px; margin-right: 2px; vertical-align: -2px; }
 
-  .snake-footnote {
+  .snake-actions {
     display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--color-warm-gray);
-    font-size: 12px;
-  }
-  .snake-footnote .footnote-link {
-    color: var(--color-warm-gray);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-  }
-  .snake-footnote .footnote-link:hover {
-    color: var(--color-ink);
-    border-color: var(--color-sand);
-  }
-  .snake-footnote .dot { opacity: 0.6; }
-
-  @media (max-width: 540px) {
-    .snake-stage { gap: 12px; padding-block: 12px 16px; }
-    .snake-headline h1 { font-size: 1.7rem; }
-    .snake-headline .sub { font-size: 0.85rem; }
-    .snake-legend { font-size: 12px; gap: 10px; }
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 4px;
   }
 </style>
 
@@ -342,8 +277,10 @@ import { SITE } from '~/lib/site'
 
     function step() {
       dir = queuedDir
-      const head: Vec = { x: snake[0].x + dir.x, y: snake[0].y + dir.y }
-      if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) return die()
+      const head: Vec = {
+        x: (snake[0].x + dir.x + COLS) % COLS,
+        y: (snake[0].y + dir.y + ROWS) % ROWS,
+      }
       for (let i = 0; i < snake.length; i++) {
         if (snake[i].x === head.x && snake[i].y === head.y) return die()
       }
@@ -382,21 +319,18 @@ import { SITE } from '~/lib/site'
       const h = cell * ROWS
       ctx.clearRect(0, 0, w, h)
 
-      // subtle grid stripes for depth
-      ctx.fillStyle = 'rgba(32, 21, 21, 0.02)'
+      ctx.fillStyle = 'rgba(32, 21, 21, 0.025)'
       for (let y = 0; y < ROWS; y++) {
         for (let x = (y % 2); x < COLS; x += 2) {
           ctx.fillRect(x * cell, y * cell, cell, cell)
         }
       }
 
-      // food
       ctx.font = `${Math.round(cell * 0.78)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(food.emoji, food.x * cell + cell / 2, food.y * cell + cell / 2 + 1)
 
-      // snake — body
       const pad = Math.max(1, Math.round(cell * 0.08))
       for (let i = snake.length - 1; i >= 0; i--) {
         const seg = snake[i]
@@ -413,7 +347,6 @@ import { SITE } from '~/lib/site'
         ctx.fill()
       }
 
-      // eyes on head
       if (snake.length) {
         const head = snake[0]
         const cx = head.x * cell + cell / 2
@@ -422,10 +355,8 @@ import { SITE } from '~/lib/site'
         const off = cell * 0.18
         const ex = dir.x !== 0 ? dir.x * cell * 0.18 : 0
         const ey = dir.y !== 0 ? dir.y * cell * 0.18 : 0
-        const perpx = dir.x !== 0 ? 0 : off
-        const perpy = dir.y !== 0 ? 0 : off
+        const perpy = dir.x !== 0 ? 0 : off
         const apx = dir.y !== 0 ? off : 0
-        const apy = dir.x !== 0 ? off : 0
         ctx.fillStyle = '#ffffff'
         ctx.beginPath()
         ctx.arc(cx + ex + apx, cy + ey + perpy, r, 0, Math.PI * 2)
@@ -475,12 +406,10 @@ import { SITE } from '~/lib/site'
     }
 
     function setQueued(nx: number, ny: number) {
-      // disallow reversing into the body
       if (snake.length > 1 && nx === -dir.x && ny === -dir.y) return
       queuedDir = { x: nx, y: ny }
     }
 
-    // Keyboard
     window.addEventListener('keydown', (e) => {
       const k = e.key
       const map: Record<string, [number, number]> = {
@@ -491,12 +420,8 @@ import { SITE } from '~/lib/site'
       }
       if (map[k]) {
         e.preventDefault()
-        if (state === 'ready') {
-          start()
-        }
-        if (state === 'playing') {
-          setQueued(map[k][0], map[k][1])
-        }
+        if (state === 'ready') start()
+        if (state === 'playing') setQueued(map[k][0], map[k][1])
         return
       }
       if ((k === ' ' || k === 'Enter') && state !== 'playing') {
@@ -505,7 +430,6 @@ import { SITE } from '~/lib/site'
       }
     })
 
-    // Touch / swipe
     let tx = 0
     let ty = 0
     let tracking = false
